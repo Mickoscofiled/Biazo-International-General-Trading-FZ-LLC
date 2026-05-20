@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import heroImg from "@/assets/images/hero.png";
 import dubaiImg from "@/assets/images/dubai-office.png";
 import miningImg from "@/assets/images/mining.png";
@@ -85,6 +85,13 @@ export default function Home() {
     window.location.href = `mailto:sales@biazointernational.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSent(true);
   };
+
+  const [showTop, setShowTop] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", color: "#0f172a", background: "#fff" }}>
 
@@ -133,6 +140,26 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* STATS BANNER */}
+      <div style={{ background: "#0f172a", borderTop: "1px solid #1e293b", borderBottom: "1px solid #1e293b" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
+            {[
+              { num: "16+", label: "Years in Business", sub: "Founded in Uganda, 2008" },
+              { num: "100+", label: "Products Catalogued", sub: "Geological equipment range" },
+              { num: "6", label: "Key Markets", sub: "Construction to healthcare" },
+              { num: "2", label: "Countries", sub: "UAE & Uganda hubs" },
+            ].map((s, i) => (
+              <div key={i} style={{ padding: "36px 32px", textAlign: "center", borderRight: i < 3 ? "1px solid #1e293b" : "none" }}>
+                <div style={{ fontFamily: "Georgia, serif", fontSize: 44, fontWeight: 700, color: "#f59e0b", lineHeight: 1 }}>{s.num}</div>
+                <div style={{ color: "#fff", fontWeight: 600, fontSize: 15, marginTop: 8 }}>{s.label}</div>
+                <div style={{ color: "#475569", fontSize: 12, marginTop: 4 }}>{s.sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* ABOUT */}
       <section id="about" style={{ padding: "100px 24px", background: "#f8fafc" }}>
@@ -420,6 +447,45 @@ export default function Home() {
           <a href="http://www.biazointernational.com" style={{ color: "#475569", fontSize: 13, textDecoration: "none" }}>www.biazointernational.com</a>
         </div>
       </footer>
+
+      {/* WHATSAPP FLOATING BUTTON */}
+      <a
+        href="https://wa.me/971524860664?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20your%20products%20and%20services."
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Chat on WhatsApp"
+        style={{
+          position: "fixed", bottom: 32, right: 32, zIndex: 200,
+          width: 60, height: 60,
+          background: "#25D366", borderRadius: "50%",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 20px rgba(37,211,102,0.5)",
+          textDecoration: "none",
+          transition: "transform 0.2s",
+        }}
+      >
+        <svg viewBox="0 0 32 32" width="30" height="30" fill="#fff">
+          <path d="M16 2C8.268 2 2 8.268 2 16c0 2.492.664 4.83 1.82 6.852L2 30l7.352-1.793A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.5a11.44 11.44 0 01-5.83-1.594l-.418-.248-4.36 1.063 1.094-4.24-.273-.435A11.462 11.462 0 014.5 16C4.5 9.596 9.596 4.5 16 4.5S27.5 9.596 27.5 16 22.404 27.5 16 27.5zm6.29-8.512c-.344-.172-2.035-1.004-2.35-1.117-.316-.113-.547-.172-.777.172-.23.344-.892 1.117-1.094 1.348-.2.23-.402.258-.746.086-.344-.172-1.453-.536-2.766-1.707-1.023-.914-1.714-2.043-1.914-2.387-.2-.344-.021-.531.15-.703.155-.154.344-.402.516-.602.172-.2.23-.344.344-.574.115-.23.058-.43-.029-.602-.086-.172-.777-1.875-1.066-2.566-.28-.672-.564-.58-.777-.59-.2-.01-.43-.012-.66-.012s-.602.086-.918.43c-.316.344-1.207 1.18-1.207 2.875s1.236 3.334 1.408 3.564c.172.23 2.434 3.717 5.896 5.211.824.355 1.467.568 1.969.727.827.263 1.58.226 2.175.137.664-.1 2.035-.832 2.322-1.635.287-.803.287-1.49.2-1.635-.085-.143-.314-.23-.658-.402z"/>
+        </svg>
+      </a>
+
+      {/* BACK TO TOP */}
+      {showTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Back to top"
+          style={{
+            position: "fixed", bottom: 104, right: 32, zIndex: 200,
+            width: 44, height: 44,
+            background: "#0f172a", border: "1px solid #334155", borderRadius: "50%",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer", color: "#fff", fontSize: 18,
+            boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
+          }}
+        >
+          ↑
+        </button>
+      )}
 
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Cat = "all" | "stationery" | "storage" | "core" | "navigation" | "gold";
 
@@ -152,7 +152,63 @@ export default function Catalogue() {
     gold: allProducts.filter(p => p.cat === "gold").length,
   };
 
-  const activeColor = catMeta.find(c => c.id === active)!;
+  const [quoteProduct, setQuoteProduct] = useState<Product | null>(null);
+  const [qForm, setQForm] = useState({ name: "", email: "", qty: "", message: "" });
+  const [qErrors, setQErrors] = useState<Record<string, string>>({});
+  const [qSent, setQSent] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const [showTop, setShowTop] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (quoteProduct) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      setQForm({ name: "", email: "", qty: "", message: "" });
+      setQErrors({});
+      setQSent(false);
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [quoteProduct]);
+
+  const openQuote = (p: Product) => { setQuoteProduct(p); };
+  const closeQuote = () => setQuoteProduct(null);
+
+  const setQ = (k: string, v: string) => {
+    setQForm(f => ({ ...f, [k]: v }));
+    setQErrors(e => ({ ...e, [k]: "" }));
+  };
+
+  const submitQuote = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs: Record<string, string> = {};
+    if (!qForm.name.trim()) errs.name = "Required";
+    if (!qForm.email.trim()) errs.email = "Required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(qForm.email)) errs.email = "Invalid email";
+    setQErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
+    const body = [
+      `Product: ${quoteProduct!.name}`,
+      `Code: ${quoteProduct!.code}`,
+      ``,
+      `Name: ${qForm.name}`,
+      `Email: ${qForm.email}`,
+      qForm.qty ? `Quantity / Notes: ${qForm.qty}` : "",
+      ``,
+      `Message:`,
+      qForm.message || "(no additional message)",
+    ].filter(v => v !== undefined).join("\n");
+
+    window.location.href = `mailto:sales@biazointernational.com?subject=${encodeURIComponent(`Quote Request: ${quoteProduct!.name} (${quoteProduct!.code})`)}&body=${encodeURIComponent(body)}`;
+    setQSent(true);
+  };
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", color: "#0f172a", background: "#fff", minHeight: "100vh" }}>
@@ -254,12 +310,23 @@ export default function Catalogue() {
                     <div style={{ fontSize: 11, fontFamily: "monospace", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 }}>Code: {p.code}</div>
                     <p style={{ color: "#475569", fontSize: 13, lineHeight: 1.6 }}>{p.desc}</p>
                   </div>
-                  <div style={{ marginTop: "auto", borderTop: "1px solid #f1f5f9", padding: "12px 24px" }}>
-                    <a
-                      href={`mailto:sales@biazointernational.com?subject=Quote: ${encodeURIComponent(p.name)} (${p.code})&body=Hello,%0D%0A%0D%0AI'd like a quote for:%0D%0A%0D%0AProduct: ${encodeURIComponent(p.name)}%0D%0ACode: ${p.code}%0D%0A%0D%0AThank you.`}
-                      style={{ color: "#0f172a", fontSize: 13, fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
+                  <div style={{ marginTop: "auto", borderTop: "1px solid #f1f5f9", padding: "12px 24px", display: "flex", gap: 12, alignItems: "center" }}>
+                    <button
+                      onClick={() => openQuote(p)}
+                      style={{ background: "#0f172a", color: "#fff", fontSize: 13, fontWeight: 700, padding: "9px 18px", border: "none", cursor: "pointer", fontFamily: "inherit" }}
                     >
                       Request a Quote →
+                    </button>
+                    <a
+                      href={`https://wa.me/971524860664?text=${encodeURIComponent(`Hi, I'd like a quote for: ${p.name} (Code: ${p.code})`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="WhatsApp"
+                      style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, background: "#25D366", borderRadius: "50%", textDecoration: "none", flexShrink: 0 }}
+                    >
+                      <svg viewBox="0 0 32 32" width="18" height="18" fill="#fff">
+                        <path d="M16 2C8.268 2 2 8.268 2 16c0 2.492.664 4.83 1.82 6.852L2 30l7.352-1.793A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm6.29 19.488c-.344.172-.658.402-1.002.23-.824-.355-1.609-.848-2.32-1.406-.573-.46-1.09-.98-1.55-1.543-.23-.287-.402-.344-.746-.172-.574.287-1.18.516-1.783.746-.344.115-.574.057-.832-.172-.832-.746-1.551-1.607-2.121-2.58-.287-.516-.172-.803.316-1.09.344-.2.66-.43.975-.66.316-.23.258-.516.086-.803-.402-.688-.805-1.377-1.092-2.121-.172-.43-.43-.574-.861-.516-.832.115-1.52.516-2.006 1.205-.43.602-.43 1.262-.172 1.949.602 1.607 1.492 3.012 2.582 4.273 1.262 1.434 2.695 2.668 4.33 3.613.832.488 1.721.861 2.639 1.148.861.258 1.693.172 2.496-.172.66-.287 1.205-.746 1.492-1.434.115-.258.115-.516.057-.803-.057-.172-.258-.258-.488-.43z"/>
+                      </svg>
                     </a>
                   </div>
                 </div>
@@ -293,6 +360,149 @@ export default function Catalogue() {
           <a href="http://www.biazointernational.com" style={{ color: "#475569", fontSize: 13, textDecoration: "none" }}>www.biazointernational.com</a>
         </div>
       </footer>
+
+      {/* QUOTE MODAL */}
+      {quoteProduct && (
+        <div
+          onClick={e => { if (e.target === e.currentTarget) closeQuote(); }}
+          style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}
+        >
+          <div
+            ref={modalRef}
+            style={{ background: "#1e293b", border: "1px solid #334155", width: "100%", maxWidth: 540, maxHeight: "90vh", overflowY: "auto", position: "relative" }}
+          >
+            {/* Modal header */}
+            <div style={{ padding: "24px 28px", borderBottom: "1px solid #334155", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+              <div>
+                <div style={{ color: "#f59e0b", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>Request a Quote</div>
+                <div style={{ color: "#fff", fontFamily: "Georgia, serif", fontWeight: 700, fontSize: 20, lineHeight: 1.3 }}>{quoteProduct.name}</div>
+                <div style={{ color: "#64748b", fontSize: 12, fontFamily: "monospace", textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>Code: {quoteProduct.code}</div>
+              </div>
+              <button
+                onClick={closeQuote}
+                style={{ background: "none", border: "none", color: "#64748b", fontSize: 24, cursor: "pointer", lineHeight: 1, flexShrink: 0, padding: 4 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal body */}
+            <div style={{ padding: 28 }}>
+              {qSent ? (
+                <div style={{ textAlign: "center", padding: "32px 0" }}>
+                  <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+                  <h3 style={{ color: "#fff", fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 700, marginBottom: 10 }}>Email client opened!</h3>
+                  <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.6, marginBottom: 28 }}>
+                    Your quote request for <strong style={{ color: "#fff" }}>{quoteProduct.name}</strong> is pre-filled. Just hit Send.
+                  </p>
+                  <button
+                    onClick={closeQuote}
+                    style={{ background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 14, padding: "11px 24px", border: "none", cursor: "pointer", fontFamily: "inherit" }}
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={submitQuote} noValidate>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                    <div>
+                      <label style={{ display: "block", color: "#94a3b8", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Full Name *</label>
+                      <input
+                        type="text"
+                        placeholder="John Smith"
+                        value={qForm.name}
+                        onChange={e => setQ("name", e.target.value)}
+                        style={{ width: "100%", padding: "10px 14px", background: "#0f172a", border: `1px solid ${qErrors.name ? "#ef4444" : "#334155"}`, color: "#fff", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
+                      />
+                      {qErrors.name && <div style={{ color: "#ef4444", fontSize: 11, marginTop: 3 }}>{qErrors.name}</div>}
+                    </div>
+                    <div>
+                      <label style={{ display: "block", color: "#94a3b8", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Email *</label>
+                      <input
+                        type="email"
+                        placeholder="you@company.com"
+                        value={qForm.email}
+                        onChange={e => setQ("email", e.target.value)}
+                        style={{ width: "100%", padding: "10px 14px", background: "#0f172a", border: `1px solid ${qErrors.email ? "#ef4444" : "#334155"}`, color: "#fff", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
+                      />
+                      {qErrors.email && <div style={{ color: "#ef4444", fontSize: 11, marginTop: 3 }}>{qErrors.email}</div>}
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: "block", color: "#94a3b8", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Quantity / Specifications</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 50 units, HQ size, 220V"
+                      value={qForm.qty}
+                      onChange={e => setQ("qty", e.target.value)}
+                      style={{ width: "100%", padding: "10px 14px", background: "#0f172a", border: "1px solid #334155", color: "#fff", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: 24 }}>
+                    <label style={{ display: "block", color: "#94a3b8", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Additional Message</label>
+                    <textarea
+                      rows={3}
+                      placeholder="Delivery location, timeline, or any other details…"
+                      value={qForm.message}
+                      onChange={e => setQ("message", e.target.value)}
+                      style={{ width: "100%", padding: "10px 14px", background: "#0f172a", border: "1px solid #334155", color: "#fff", fontSize: 14, fontFamily: "inherit", outline: "none", resize: "vertical", boxSizing: "border-box" }}
+                    />
+                  </div>
+
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <button
+                      type="submit"
+                      style={{ flex: 1, background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 15, padding: "14px 0", border: "none", cursor: "pointer", fontFamily: "inherit" }}
+                    >
+                      Send Quote Request →
+                    </button>
+                    <a
+                      href={`https://wa.me/971524860664?text=${encodeURIComponent(`Hi, I'd like a quote for:\n\nProduct: ${quoteProduct.name}\nCode: ${quoteProduct.code}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: "flex", alignItems: "center", gap: 8, background: "#25D366", color: "#fff", fontWeight: 700, fontSize: 14, padding: "14px 18px", textDecoration: "none", flexShrink: 0 }}
+                    >
+                      <svg viewBox="0 0 32 32" width="18" height="18" fill="#fff">
+                        <path d="M16 2C8.268 2 2 8.268 2 16c0 2.492.664 4.83 1.82 6.852L2 30l7.352-1.793A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm6.29 19.488c-.344.172-.658.402-1.002.23-.824-.355-1.609-.848-2.32-1.406-.573-.46-1.09-.98-1.55-1.543-.23-.287-.402-.344-.746-.172-.574.287-1.18.516-1.783.746-.344.115-.574.057-.832-.172-.832-.746-1.551-1.607-2.121-2.58-.287-.516-.172-.803.316-1.09.344-.2.66-.43.975-.66.316-.23.258-.516.086-.803-.402-.688-.805-1.377-1.092-2.121-.172-.43-.43-.574-.861-.516-.832.115-1.52.516-2.006 1.205-.43.602-.43 1.262-.172 1.949.602 1.607 1.492 3.012 2.582 4.273 1.262 1.434 2.695 2.668 4.33 3.613.832.488 1.721.861 2.639 1.148.861.258 1.693.172 2.496-.172.66-.287 1.205-.746 1.492-1.434.115-.258.115-.516.057-.803-.057-.172-.258-.258-.488-.43z"/>
+                      </svg>
+                      WhatsApp
+                    </a>
+                  </div>
+                  <p style={{ color: "#475569", fontSize: 11, marginTop: 10, textAlign: "center" }}>
+                    Clicking "Send Quote Request" opens your email client with this request pre-filled.
+                  </p>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* WHATSAPP FLOATING BUTTON */}
+      <a
+        href="https://wa.me/971524860664?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20products%20in%20your%20geological%20catalogue."
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Chat on WhatsApp"
+        style={{ position: "fixed", bottom: 32, right: 32, zIndex: 200, width: 60, height: 60, background: "#25D366", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(37,211,102,0.5)", textDecoration: "none" }}
+      >
+        <svg viewBox="0 0 32 32" width="30" height="30" fill="#fff">
+          <path d="M16 2C8.268 2 2 8.268 2 16c0 2.492.664 4.83 1.82 6.852L2 30l7.352-1.793A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.5a11.44 11.44 0 01-5.83-1.594l-.418-.248-4.36 1.063 1.094-4.24-.273-.435A11.462 11.462 0 014.5 16C4.5 9.596 9.596 4.5 16 4.5S27.5 9.596 27.5 16 22.404 27.5 16 27.5zm6.29-8.512c-.344-.172-2.035-1.004-2.35-1.117-.316-.113-.547-.172-.777.172-.23.344-.892 1.117-1.094 1.348-.2.23-.402.258-.746.086-.344-.172-1.453-.536-2.766-1.707-1.023-.914-1.714-2.043-1.914-2.387-.2-.344-.021-.531.15-.703.155-.154.344-.402.516-.602.172-.2.23-.344.344-.574.115-.23.058-.43-.029-.602-.086-.172-.777-1.875-1.066-2.566-.28-.672-.564-.58-.777-.59-.2-.01-.43-.012-.66-.012s-.602.086-.918.43c-.316.344-1.207 1.18-1.207 2.875s1.236 3.334 1.408 3.564c.172.23 2.434 3.717 5.896 5.211.824.355 1.467.568 1.969.727.827.263 1.58.226 2.175.137.664-.1 2.035-.832 2.322-1.635.287-.803.287-1.49.2-1.635-.085-.143-.314-.23-.658-.402z"/>
+        </svg>
+      </a>
+
+      {/* BACK TO TOP */}
+      {showTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Back to top"
+          style={{ position: "fixed", bottom: 104, right: 32, zIndex: 200, width: 44, height: 44, background: "#0f172a", border: "1px solid #334155", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#fff", fontSize: 18, boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
+        >
+          ↑
+        </button>
+      )}
 
     </div>
   );
