@@ -1,3 +1,4 @@
+import { useState } from "react";
 import heroImg from "@/assets/images/hero.png";
 import dubaiImg from "@/assets/images/dubai-office.png";
 import miningImg from "@/assets/images/mining.png";
@@ -26,7 +27,64 @@ const catalogueHighlights = [
   { cat: "Gold Mining Accessories", items: "Gold shaker tables, furnaces, metal detectors, sluice boxes, panning kits, chain mill crushers" },
 ];
 
+const inputStyle = {
+  width: "100%",
+  padding: "12px 16px",
+  background: "#0f172a",
+  border: "1px solid #334155",
+  color: "#fff",
+  fontSize: 15,
+  fontFamily: "inherit",
+  outline: "none",
+  boxSizing: "border-box" as const,
+};
+
+const labelStyle = {
+  display: "block",
+  color: "#94a3b8",
+  fontSize: 13,
+  fontWeight: 600,
+  marginBottom: 8,
+  textTransform: "uppercase" as const,
+  letterSpacing: 1,
+};
+
 export default function Home() {
+  const [form, setForm] = useState({ name: "", company: "", email: "", phone: "", subject: "", message: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [sent, setSent] = useState(false);
+
+  const set = (k: string, v: string) => {
+    setForm(f => ({ ...f, [k]: v }));
+    setErrors(e => ({ ...e, [k]: "" }));
+  };
+
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (!form.name.trim()) e.name = "Required";
+    if (!form.email.trim()) e.email = "Required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Invalid email";
+    if (!form.message.trim()) e.message = "Required";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    const body = [
+      `Name: ${form.name}`,
+      form.company ? `Company: ${form.company}` : "",
+      `Email: ${form.email}`,
+      form.phone ? `Phone: ${form.phone}` : "",
+      ``,
+      `Message:`,
+      form.message,
+    ].filter(Boolean).join("\n");
+    const subject = form.subject || `Inquiry from ${form.name}`;
+    window.location.href = `mailto:sales@biazointernational.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setSent(true);
+  };
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", color: "#0f172a", background: "#fff" }}>
 
@@ -195,35 +253,159 @@ export default function Home() {
       {/* CONTACT */}
       <section id="contact" style={{ padding: "100px 24px", background: "#0f172a", color: "#fff" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80 }}>
+
+          {/* Left — info */}
           <div>
-            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, marginBottom: 16, lineHeight: 1.2 }}>Let's Build the Future Together.</h2>
-            <p style={{ color: "#94a3b8", fontSize: 17, marginBottom: 48, lineHeight: 1.6 }}>Reach out to our team in the UAE to discuss your procurement and supply chain needs.</p>
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ color: "#f59e0b", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, marginBottom: 8 }}>Ras Al Khaimah, UAE</div>
-              <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>RAKEZ Business Zone-FZ B4209b10<br />Business Center 04</p>
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, marginBottom: 16, lineHeight: 1.2 }}>
+              Let's Build the Future Together.
+            </h2>
+            <p style={{ color: "#94a3b8", fontSize: 17, marginBottom: 48, lineHeight: 1.6 }}>
+              Fill in the form and your email client will open with everything pre-filled — ready to send in one click.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 48 }}>
+              <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <div style={{ color: "#f59e0b", fontSize: 22, marginTop: 2 }}>✉</div>
+                <div>
+                  <div style={{ color: "#f59e0b", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>Email</div>
+                  <a href="mailto:sales@biazointernational.com" style={{ color: "#e2e8f0", fontSize: 15, textDecoration: "none" }}>sales@biazointernational.com</a>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <div style={{ color: "#f59e0b", fontSize: 22, marginTop: 2 }}>📞</div>
+                <div>
+                  <div style={{ color: "#f59e0b", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>Phone</div>
+                  <a href="tel:+971524860664" style={{ color: "#e2e8f0", fontSize: 15, textDecoration: "none", display: "block" }}>+971 52 486 0664</a>
+                  <a href="tel:+971568878801" style={{ color: "#94a3b8", fontSize: 14, textDecoration: "none", display: "block", marginTop: 2 }}>+971 56 887 8801</a>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <div style={{ color: "#f59e0b", fontSize: 22, marginTop: 2 }}>📍</div>
+                <div>
+                  <div style={{ color: "#f59e0b", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>Ras Al Khaimah, UAE</div>
+                  <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.6, margin: 0 }}>RAKEZ Business Zone-FZ B4209b10<br />Business Center 04</p>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <div style={{ color: "#f59e0b", fontSize: 22, marginTop: 2 }}>📍</div>
+                <div>
+                  <div style={{ color: "#f59e0b", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>Dubai, UAE</div>
+                  <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.6, margin: 0 }}>Abraj Shopping Center, 903<br />Sabka Rd, Deira</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <div style={{ color: "#f59e0b", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, marginBottom: 8 }}>Dubai, UAE</div>
-              <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>Abraj Shopping Center, 903<br />Sabka Rd, Deira</p>
-            </div>
-          </div>
-          <div style={{ background: "#1e293b", padding: 48, border: "1px solid #334155" }}>
-            <h3 style={{ fontFamily: "Georgia, serif", fontSize: 24, fontWeight: 700, marginBottom: 32 }}>Contact Us</h3>
-            <div style={{ borderBottom: "1px solid #334155", paddingBottom: 20, marginBottom: 20 }}>
-              <div style={{ color: "#64748b", fontSize: 13, marginBottom: 6 }}>Email</div>
-              <a href="mailto:sales@biazointernational.com" style={{ color: "#fff", fontSize: 18, textDecoration: "none" }}>sales@biazointernational.com</a>
-            </div>
-            <div style={{ borderBottom: "1px solid #334155", paddingBottom: 20, marginBottom: 20 }}>
-              <div style={{ color: "#64748b", fontSize: 13, marginBottom: 6 }}>Phone (Primary)</div>
-              <a href="tel:+971524860664" style={{ color: "#fff", fontSize: 18, textDecoration: "none" }}>+971 52 486 0664</a>
-            </div>
-            <div style={{ paddingBottom: 20, marginBottom: 32 }}>
-              <div style={{ color: "#64748b", fontSize: 13, marginBottom: 6 }}>Phone (Secondary)</div>
-              <a href="tel:+971568878801" style={{ color: "#fff", fontSize: 18, textDecoration: "none" }}>+971 56 887 8801</a>
-            </div>
-            <a href="mailto:sales@biazointernational.com" style={{ display: "block", background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 17, padding: "18px 0", textDecoration: "none", textAlign: "center" }}>
-              Send Inquiry
+
+            <a href="http://www.biazointernational.com" target="_blank" rel="noopener noreferrer" style={{ color: "#64748b", fontSize: 14, textDecoration: "none" }}>
+              🌐 www.biazointernational.com
             </a>
+          </div>
+
+          {/* Right — form */}
+          <div style={{ background: "#1e293b", padding: 48, border: "1px solid #334155" }}>
+            {sent ? (
+              <div style={{ textAlign: "center", padding: "48px 0" }}>
+                <div style={{ fontSize: 56, marginBottom: 20 }}>✅</div>
+                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Email client opened!</h3>
+                <p style={{ color: "#94a3b8", fontSize: 15, lineHeight: 1.6, marginBottom: 32 }}>
+                  Your message is pre-filled and ready to send. Just hit Send in your email app.
+                </p>
+                <button
+                  onClick={() => { setSent(false); setForm({ name: "", company: "", email: "", phone: "", subject: "", message: "" }); }}
+                  style={{ background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 15, padding: "12px 28px", border: "none", cursor: "pointer", fontFamily: "inherit" }}
+                >
+                  Send Another Message
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} noValidate>
+                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 24, fontWeight: 700, marginBottom: 32 }}>Send an Inquiry</h3>
+
+                {/* Row 1: Name + Company */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+                  <div>
+                    <label style={labelStyle}>Full Name *</label>
+                    <input
+                      type="text"
+                      placeholder="John Smith"
+                      value={form.name}
+                      onChange={e => set("name", e.target.value)}
+                      style={{ ...inputStyle, borderColor: errors.name ? "#ef4444" : "#334155" }}
+                    />
+                    {errors.name && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4 }}>{errors.name}</div>}
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Company</label>
+                    <input
+                      type="text"
+                      placeholder="Acme Corp"
+                      value={form.company}
+                      onChange={e => set("company", e.target.value)}
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* Row 2: Email + Phone */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+                  <div>
+                    <label style={labelStyle}>Email *</label>
+                    <input
+                      type="email"
+                      placeholder="you@company.com"
+                      value={form.email}
+                      onChange={e => set("email", e.target.value)}
+                      style={{ ...inputStyle, borderColor: errors.email ? "#ef4444" : "#334155" }}
+                    />
+                    {errors.email && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4 }}>{errors.email}</div>}
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Phone</label>
+                    <input
+                      type="tel"
+                      placeholder="+1 234 567 8900"
+                      value={form.phone}
+                      onChange={e => set("phone", e.target.value)}
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* Subject */}
+                <div style={{ marginBottom: 20 }}>
+                  <label style={labelStyle}>Subject</label>
+                  <input
+                    type="text"
+                    placeholder="Quote request for mining equipment"
+                    value={form.subject}
+                    onChange={e => set("subject", e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+
+                {/* Message */}
+                <div style={{ marginBottom: 28 }}>
+                  <label style={labelStyle}>Message *</label>
+                  <textarea
+                    rows={5}
+                    placeholder="Describe what you're looking for — product names, quantities, delivery location, timeline…"
+                    value={form.message}
+                    onChange={e => set("message", e.target.value)}
+                    style={{ ...inputStyle, resize: "vertical", borderColor: errors.message ? "#ef4444" : "#334155" }}
+                  />
+                  {errors.message && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4 }}>{errors.message}</div>}
+                </div>
+
+                <button
+                  type="submit"
+                  style={{ width: "100%", background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 17, padding: "18px 0", border: "none", cursor: "pointer", fontFamily: "inherit", letterSpacing: 0.5 }}
+                >
+                  Send Inquiry →
+                </button>
+                <p style={{ color: "#475569", fontSize: 12, marginTop: 12, textAlign: "center" }}>
+                  Submitting opens your email client with this message pre-filled.
+                </p>
+              </form>
+            )}
           </div>
         </div>
       </section>
