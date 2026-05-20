@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "D25NhOBxUt5OQUYphnxf2"
@@ -24,3 +23,9 @@ id = "twBbstcqiCg-em9wKDMSQ"
 uri = "file://artifacts/biazo/src/assets/images/steel-pipes.png"
 type = "image"
 title = "Stacked steel pipes industrial pattern"
+
+[[outputs]]
+id = "sq32InxWnGY6z_vGrEu38"
+uri = "file://biazo-source-code.tar.gz"
+type = "unspecified"
+title = "Biazo Website Source Code"

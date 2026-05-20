@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronRight, Globe, Shield, Anchor, Zap, Droplet, Box, Layers, Hammer, Activity } from "lucide-react";
+import { Link } from "wouter";
+import { ArrowRight, ChevronRight, Globe, Shield, Anchor, Zap, Droplet, Box, Layers, Hammer, Activity, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import heroImg from "@/assets/images/hero.png";
@@ -50,6 +51,7 @@ export default function Home() {
             <a href="#about" className="hover:text-amber-500 transition-colors">About</a>
             <a href="#markets" className="hover:text-amber-500 transition-colors">Markets</a>
             <a href="#products" className="hover:text-amber-500 transition-colors">Products</a>
+            <Link href="/catalogue" className="hover:text-amber-500 transition-colors">Catalogue</Link>
             <a href="#contact" className="hover:text-amber-500 transition-colors">Contact</a>
           </div>
           <Button className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-none px-6">
@@ -205,6 +207,78 @@ export default function Home() {
                 <p className="text-slate-600 text-sm leading-relaxed">{category.desc}</p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Geological Catalogue CTA */}
+      <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
+          <img src={miningImg} alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeIn}
+            >
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium mb-6 uppercase tracking-widest">
+                <BookOpen className="w-4 h-4" /> Geological Catalogue 2026/27
+              </div>
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 leading-tight">
+                Explore Our Full Range of Geological Equipment
+              </h2>
+              <p className="text-slate-300 text-lg mb-8 leading-relaxed">
+                Browse over 80 specialist products across five categories — from Brunton compasses and Garmin GPS units to gold shaker tables, core splitters, and Rite in the Rain field books.
+              </p>
+              <div className="grid grid-cols-2 gap-4 mb-10">
+                {[
+                  { label: "Stationery & Labelling", count: "32 products" },
+                  { label: "Sample Storage", count: "6 products" },
+                  { label: "Core & More", count: "26 products" },
+                  { label: "Exploration & Navigation", count: "14 products" },
+                  { label: "Gold Mining Accessories", count: "18 products" },
+                ].map((cat, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <ChevronRight className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-white font-medium text-sm">{cat.label}</div>
+                      <div className="text-slate-400 text-xs">{cat.count}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Link href="/catalogue">
+                <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-none h-14 px-8 text-base">
+                  Browse the Catalogue <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="grid grid-cols-2 gap-4"
+            >
+              {[
+                { title: "Core Splitting Machines", sub: "220 V & 380 V models" },
+                { title: "Brunton Compasses", sub: "TruArc, ComPro, Geo, Axis" },
+                { title: "Garmin GPS Units", sub: "eTrex SE, 22x, 32x, Map 65s" },
+                { title: "Gold Shaker Tables", sub: "145–750 kg/h capacity" },
+                { title: "Steel & Plastic Core Trays", sub: "Multiple standard sizes" },
+                { title: "Estwing Rock Picks", sub: "Leather & vinyl handle" },
+              ].map((item, i) => (
+                <Link key={i} href="/catalogue" className="block bg-slate-800 border border-slate-700 hover:border-amber-500/50 p-5 transition-all duration-300 group">
+                  <div className="text-amber-500 text-xs font-bold uppercase tracking-wider mb-2 group-hover:text-amber-400">Featured</div>
+                  <div className="font-serif font-bold text-white text-sm mb-1">{item.title}</div>
+                  <div className="text-slate-400 text-xs">{item.sub}</div>
+                </Link>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
