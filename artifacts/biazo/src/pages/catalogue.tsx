@@ -1,1004 +1,299 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Link } from "wouter";
-import { ArrowLeft, Search, ChevronRight, Tag, Globe } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
-type Category = "all" | "stationery" | "storage" | "core" | "navigation" | "gold";
+type Cat = "all" | "stationery" | "storage" | "core" | "navigation" | "gold";
 
 interface Product {
   code: string;
   name: string;
-  description: string;
-  category: Exclude<Category, "all">;
-  tags?: string[];
+  desc: string;
+  cat: Exclude<Cat, "all">;
 }
 
-const products: Product[] = [
-  // ── Stationery & Labelling ──────────────────────────────────────
-  {
-    code: "PLA-FLAG50",
-    name: "PVC Flagging Tapes",
-    description: "Bright, highly visible 25mm × 50m PVC tape for flagging, sorting, field grading, and surveying. 12 colours available. Easy to tear and tie, no smudging on matt finish.",
-    category: "stationery",
-    tags: ["flagging", "marking", "surveying"],
-  },
-  {
-    code: "GEO-FLAG-DISP",
-    name: "Flagging Tape Dispenser",
-    description: "Heavy-duty 600D Oxford fabric dispenser with PVC liner. Waterproof, holds 2 × 50m rolls with a plastic divider to prevent tangling. Belt loop with snap for hands-free use.",
-    category: "stationery",
-    tags: ["flagging", "accessory"],
-  },
-  {
-    code: "PLA-FLAG700MM",
-    name: "PVC Flags on Wire Stakes",
-    description: "Fast, highly visible ground-marking flags for survey stations, sampling positions, and demarcation. Available in 500 mm, 700 mm, and 900 mm lengths. 12 colours, 100 per pack.",
-    category: "stationery",
-    tags: ["flagging", "marking"],
-  },
-  {
-    code: "PLA-PINTAG-",
-    name: "Pin Tags on Wire Stakes",
-    description: "Bright plastic pin tags (35 mm × 80 mm head) on wire stakes for easy ground identification. Available in 7 colours, packed per colour in bundles of 100.",
-    category: "stationery",
-    tags: ["tagging", "marking"],
-  },
-  {
-    code: "PLA-TRI",
-    name: "Triangle Markers",
-    description: "UV-stabilised plastic triangle trail markers (90 mm × 120 mm) for surveying, ecological marking, trail identification, and pest-control. 5 colours, 200 per pack.",
-    category: "stationery",
-    tags: ["marking", "surveying"],
-  },
-  {
-    code: "PLA-ALUTAGS",
-    name: "Alutags",
-    description: "Weatherproof aluminium tags (25 mm × 75 mm, 100 mic) with wire ties for geological sample identification. Can be inscribed or written on with permanent marker. 1 000 per pack.",
-    category: "stationery",
-    tags: ["tagging", "aluminium", "samples"],
-  },
-  {
-    code: "PLA-ALUEYELET",
-    name: "Aluminium Labels with Copper Ties",
-    description: "Reliable, weatherproof 20 mm × 100 mm aluminium labels with copper eyelets and copper ties. Details can be inscribed or written on with a permanent marker. 1 000 per pack.",
-    category: "stationery",
-    tags: ["tagging", "aluminium", "samples"],
-  },
-  {
-    code: "PLA-ALUSTICK",
-    name: "Pointed Aluminium Labels with Wire Ties",
-    description: "23 mm × 113 mm pointed aluminium labels with wire ties. Push into soil or tie to samples. Weatherproof, 150 mic thick. 1 000 per pack.",
-    category: "stationery",
-    tags: ["tagging", "aluminium", "samples"],
-  },
-  {
-    code: "PLA-EXPTAGS",
-    name: "Core Tray Tags",
-    description: "50 mm × 78 mm aluminium ID tags (100 mic) that slot into core tray tag holders. Writeable for depth and recovery data. 1 000 per pack. Also available 45 mm × 80 mm.",
-    category: "stationery",
-    tags: ["tagging", "core", "samples"],
-  },
-  {
-    code: "LAB-STEELTAG125",
-    name: "Steel Tags",
-    description: "63 mm × 125 mm steel tags (150 mic) for identification of crates, boxes, and equipment. Write on with permanent marker. Available in silver, orange, and blue. 1 000 per pack.",
-    category: "stationery",
-    tags: ["tagging", "steel"],
-  },
-  {
-    code: "LAB-PT63X125",
-    name: "Plastic Tags with Slots — 250 mic",
-    description: "Durable 63 mm × 125 mm plastic tags with two slots. Flood-coated colours. 10 colour options available. 1 000 per pack.",
-    category: "stationery",
-    tags: ["tagging", "plastic"],
-  },
-  {
-    code: "LAB-PT62X125",
-    name: "Plastic Tags — 600 mic",
-    description: "Heavy-duty 62 mm × 125 mm plastic tags with 2 round holes. 600 mic thick for extreme durability. Available in red, yellow, white, green, and blue. 200 per pack.",
-    category: "stationery",
-    tags: ["tagging", "plastic"],
-  },
-  {
-    code: "LAB-BUFF105X50",
-    name: "Buff Tags",
-    description: "200 gsm board paper labels laminated on one side for tear resistance. One hole for tying. Standard sizes: 50 mm × 105 mm (white) and 40 mm × 70 mm (manila). 1 000 per roll.",
-    category: "stationery",
-    tags: ["tagging", "paper"],
-  },
-  {
-    code: "NUR-TMARKSTRLRG",
-    name: "Large Plastic T-Markers",
-    description: "UV-stabilised plastic T-markers for ground identification. Push into soil and mark with indelible ink. Straight bed, angled bed, and straight T-marker styles. 460 mm full length. 100 per pack.",
-    category: "stationery",
-    tags: ["marking", "ground"],
-  },
-  {
-    code: "LAB-PVC155MM16",
-    name: "PVC Self-Tie Labels",
-    description: "Weatherproof 16 mm × 155 mm vinyl labels with integrated tie — no extra fasteners needed. 10 colours. Ideal for core trays, sample bags, drill holes, and monitoring points. 1 000 per pack.",
-    category: "stationery",
-    tags: ["tagging", "labelling"],
-  },
-  {
-    code: "OS240",
-    name: "A5 Field Books",
-    description: "A5 field notebooks, wet-strength series. Various page templates: OS240, OS241, OS244–OS251. Designed for rugged outdoor use and data recording.",
-    category: "stationery",
-    tags: ["notebook", "fieldwork"],
-  },
-  {
-    code: "RITR-540F",
-    name: "Rite in the Rain Fabrikoid Cover Geological Book",
-    description: "All-weather geological field book with 20 geological reference pages, rulers, scales, conversion tables, and a removable rugged 2-sided photo scale.",
-    category: "stationery",
-    tags: ["notebook", "fieldwork", "rite in the rain"],
-  },
-  {
-    code: "RITR-350F",
-    name: "Rite in the Rain Fabrikoid Cover Field Book",
-    description: "All-weather field book with imperial and metric rulers, conversion tables, and map scale. Fabrikoid cover for outdoor durability.",
-    category: "stationery",
-    tags: ["notebook", "fieldwork", "rite in the rain"],
-  },
-  {
-    code: "RITR-295",
-    name: "Rite in the Rain Field Desk",
-    description: "Lightweight field desk (248 mm × 406 mm × 57 mm, 590 g) with a sturdy writing surface, strong exterior clip, and internal storage for documents and writing essentials.",
-    category: "stationery",
-    tags: ["fieldwork", "desk", "rite in the rain"],
-  },
-  {
-    code: "RITR-970",
-    name: "Rite in the Rain Dirtbag Pen Organizer",
-    description: "Rugged TPU organizer with sealed seams (203 mm × 121 mm × 19 mm, 100 g). Exterior pen slots, card pockets, and secured zippered compartment for harsh conditions.",
-    category: "stationery",
-    tags: ["organizer", "rite in the rain"],
-  },
-  {
-    code: "RITR-OR56",
-    name: "Rite in the Rain Lead Holder",
-    description: "Industrial gravity-fed lead holder with glove-friendly design. Uses extra-thick 5.6 mm lead that marks wood and rough surfaces. Includes refills.",
-    category: "stationery",
-    tags: ["writing", "rite in the rain"],
-  },
-  {
-    code: "RITR-OR11",
-    name: "Rite in the Rain All-Weather Pen",
-    description: "All-weather click pen with triangular file-textured grip. Works in extreme conditions — through water, sweat, grease, and mud. Black ink.",
-    category: "stationery",
-    tags: ["writing", "rite in the rain"],
-  },
-  {
-    code: "RITR-372",
-    name: "Rite in the Rain Loose Leaf Pages",
-    description: "Water-resistant, archival-grade 118 mm × 178 mm paper. Withstands water, sweat, grease, and mud. 100 sheets per pack.",
-    category: "stationery",
-    tags: ["paper", "rite in the rain"],
-  },
-  {
-    code: "GEO-CHINAM",
-    name: "Peel-off China Markers",
-    description: "Ideal for core/rock markings and photo labelling. Resistant to crumbling and melting on hot or rough surfaces. No sharpening — simply peel back the wrapper. 12 per pack (one colour).",
-    category: "stationery",
-    tags: ["marking", "writing"],
-  },
-  {
-    code: "GEO-EDD",
-    name: "Edding Paint Markers",
-    description: "Permanent, waterproof, and UV-tested weatherproof markers with bullet-shaped tips. 10 per pack, one colour per pack.",
-    category: "stationery",
-    tags: ["marking", "paint"],
-  },
-  {
-    code: "GEO-RBX-WH",
-    name: "Rilbex Paint Markers",
-    description: "Quick-drying industrial permanent markers for rough, rusty, oily, wet, and smooth surfaces. Weather-resistant, temperature-resistant up to 1 000 °C. 50 ml, 10 per pack. White and yellow available.",
-    category: "stationery",
-    tags: ["marking", "paint", "industrial"],
-  },
-  {
-    code: "GEO-PROTRACTOR",
-    name: "Douglas Protractor & Steel Protractor",
-    description: "Douglas protractor for field use plus a steel protractor with hinged arm. Essential tools for angular measurement in geological mapping and surveying.",
-    category: "stationery",
-    tags: ["measurement", "surveying"],
-  },
-  {
-    code: "GEO-INCLIN",
-    name: "SOLA Inclinometer",
-    description: "Precision inclinometer for measuring inclination and dip angles in the field. Robust construction for outdoor use.",
-    category: "stationery",
-    tags: ["measurement", "surveying"],
-  },
-  {
-    code: "GEO-TRISC",
-    name: "Triangular Scales",
-    description: "Professional triangular scale rulers for map work and technical drawing in the field.",
-    category: "stationery",
-    tags: ["measurement", "map"],
-  },
-  {
-    code: "GEO-SAMPTICKET",
-    name: "Sample Ticket Book",
-    description: "Pre-printed sample ticket books for systematic recording of sample data in the field.",
-    category: "stationery",
-    tags: ["recording", "samples"],
-  },
-  {
-    code: "GEO-SPRAY",
-    name: "Dy-Mark Spray Paint",
-    description: "Industrial spray paint for marking rocks, ground, and equipment in the field. Highly visible colours.",
-    category: "stationery",
-    tags: ["marking", "paint"],
-  },
-  {
-    code: "GEO-BARRCONE",
-    name: "Mining Barrier Cones",
-    description: "High-visibility safety cones for hazard demarcation in mining and field operations.",
-    category: "stationery",
-    tags: ["safety", "demarcation"],
-  },
+const allProducts: Product[] = [
+  // Stationery & Labelling
+  { code: "PLA-FLAG50", name: "PVC Flagging Tapes", desc: "Bright, highly visible 25mm × 50/75/100m PVC tape. 12 colours. Easy to tear and tie, no smudging on matt finish. Ideal for flagging, sorting, field grading, and surveying.", cat: "stationery" },
+  { code: "GEO-FLAG-DISP", name: "Flagging Tape Dispenser", desc: "Heavy-duty 600D Oxford fabric dispenser with PVC liner. Waterproof, holds 2 × 50m rolls. Belt loop with snap for hands-free use.", cat: "stationery" },
+  { code: "PLA-FLAG700MM", name: "PVC Flags on Wire Stakes", desc: "Fast, highly visible ground flags for survey stations and demarcation. 500mm, 700mm, 900mm lengths. 12 colours, 100 per pack.", cat: "stationery" },
+  { code: "PLA-PINTAG-", name: "Pin Tags on Wire Stakes", desc: "Bright plastic pin tags (35mm × 80mm head) on wire stakes. 7 colours, 100 per pack.", cat: "stationery" },
+  { code: "PLA-TRI", name: "Triangle Markers", desc: "UV-stabilised plastic triangle trail markers (90mm × 120mm). 5 colours, 200 per pack.", cat: "stationery" },
+  { code: "PLA-ALUTAGS", name: "Alutags", desc: "Weatherproof aluminium tags (25mm × 75mm) with wire ties. Write with permanent marker. 1 000 per pack.", cat: "stationery" },
+  { code: "PLA-ALUEYELET", name: "Aluminium Labels with Copper Ties", desc: "Weatherproof 20mm × 100mm aluminium labels with copper eyelets and copper ties. 1 000 per pack.", cat: "stationery" },
+  { code: "PLA-ALUSTICK", name: "Pointed Aluminium Labels with Wire Ties", desc: "23mm × 113mm pointed aluminium labels. Push into soil or tie to samples. 1 000 per pack.", cat: "stationery" },
+  { code: "PLA-EXPTAGS", name: "Core Tray Tags", desc: "50mm × 78mm aluminium ID tags that slot into core tray tag holders. 1 000 per pack.", cat: "stationery" },
+  { code: "LAB-STEELTAG125", name: "Steel Tags", desc: "63mm × 125mm steel tags for crates, boxes, equipment. Available in silver, orange, blue. 1 000 per pack.", cat: "stationery" },
+  { code: "LAB-PT63X125", name: "Plastic Tags with Slots — 250 mic", desc: "Durable 63mm × 125mm plastic tags with two slots. 10 colour options. 1 000 per pack.", cat: "stationery" },
+  { code: "LAB-PT62X125", name: "Plastic Tags — 600 mic", desc: "Heavy-duty 62mm × 125mm plastic tags with 2 round holes. 5 colours. 200 per pack.", cat: "stationery" },
+  { code: "LAB-BUFF105X50", name: "Buff Tags", desc: "200gsm board paper labels laminated for tear resistance. White (50×105mm) and manila (40×70mm). 1 000 per roll.", cat: "stationery" },
+  { code: "NUR-TMARKSTRLRG", name: "Large Plastic T-Markers", desc: "UV-stabilised plastic T-markers for ground identification. Push into soil. 460mm length. 100 per pack.", cat: "stationery" },
+  { code: "LAB-PVC155MM16", name: "PVC Self-Tie Labels", desc: "Weatherproof 16mm × 155mm vinyl labels with integrated tie. 10 colours. 1 000 per pack.", cat: "stationery" },
+  { code: "OS240", name: "A5 Field Books", desc: "A5 field notebooks, wet-strength series. Various page templates: OS240, OS241, OS244–OS251.", cat: "stationery" },
+  { code: "RITR-540F", name: "Rite in the Rain Geological Book", desc: "All-weather fabrikoid cover geological field book with 20 reference pages, rulers, scales, conversion tables, and removable photo scale.", cat: "stationery" },
+  { code: "RITR-350F", name: "Rite in the Rain Field Book", desc: "All-weather fabrikoid cover field book with imperial & metric rulers, conversion tables, and map scale.", cat: "stationery" },
+  { code: "RITR-295", name: "Rite in the Rain Field Desk", desc: "Lightweight field desk (248mm × 406mm × 57mm, 590g) with sturdy writing surface, strong clip, and internal storage.", cat: "stationery" },
+  { code: "RITR-970", name: "Rite in the Rain Dirtbag Pen Organizer", desc: "Rugged TPU organiser with sealed seams. Exterior pen slots, card pockets, secured zipper. 203mm × 121mm × 19mm.", cat: "stationery" },
+  { code: "RITR-OR56", name: "Rite in the Rain Lead Holder", desc: "Industrial gravity-fed lead holder with 5.6mm lead. Marks wood and rough surfaces. Includes refills.", cat: "stationery" },
+  { code: "RITR-OR11", name: "Rite in the Rain All-Weather Pen", desc: "All-weather click pen with triangular grip. Works through water, sweat, grease, and mud. Black ink.", cat: "stationery" },
+  { code: "RITR-372", name: "Rite in the Rain Loose Leaf Pages", desc: "Water-resistant archival-grade 118mm × 178mm paper. 100 sheets per pack.", cat: "stationery" },
+  { code: "GEO-CHINAM", name: "Peel-off China Markers", desc: "For core/rock markings and photo labelling. Resistant to crumbling on hot surfaces. No sharpening needed. 12 per pack.", cat: "stationery" },
+  { code: "GEO-EDD", name: "Edding Paint Markers", desc: "Permanent, waterproof, UV-tested markers with bullet-shaped tips. 10 per pack, one colour per pack.", cat: "stationery" },
+  { code: "GEO-RBX-WH", name: "Rilbex Paint Markers", desc: "Quick-drying industrial permanent markers for rough, oily, wet surfaces. Temperature-resistant to 1 000°C. 50ml, 10 per pack.", cat: "stationery" },
+  { code: "GEO-PROTRACTOR", name: "Douglas & Steel Protractors", desc: "Douglas protractor and steel protractor with hinged arm for angular measurement in geological mapping.", cat: "stationery" },
+  { code: "GEO-INCLIN", name: "SOLA Inclinometer", desc: "Precision inclinometer for measuring inclination and dip angles in the field.", cat: "stationery" },
+  { code: "GEO-TRISC", name: "Triangular Scales", desc: "Professional triangular scale rulers for map work and technical drawing in the field.", cat: "stationery" },
+  { code: "GEO-SAMPTICKET", name: "Sample Ticket Book", desc: "Pre-printed sample ticket books for systematic field data recording.", cat: "stationery" },
+  { code: "GEO-SPRAY", name: "Dy-Mark Spray Paint", desc: "Industrial spray paint for marking rocks, ground, and equipment. Highly visible colours.", cat: "stationery" },
+  { code: "GEO-BARRCONE", name: "Mining Barrier Cones", desc: "High-visibility safety cones for hazard demarcation in mining and field operations.", cat: "stationery" },
 
-  // ── Sample Storage ───────────────────────────────────────────────
-  {
-    code: "GEO-CALICO",
-    name: "Calico Sample Bags",
-    description: "Durable, breathable calico cotton bags for storing and transporting geological samples. Ideal for rock and soil samples requiring air circulation during storage and transport.",
-    category: "storage",
-    tags: ["sample bags", "cotton"],
-  },
-  {
-    code: "GEO-BULK",
-    name: "Bulk Sample Bags",
-    description: "Heavy-duty bulk bags for storing and transporting large quantities of geological material. Various sizes available.",
-    category: "storage",
-    tags: ["sample bags", "bulk"],
-  },
-  {
-    code: "GEO-GEOCHENV",
-    name: "Geochem Envelopes",
-    description: "Kraft paper envelopes designed for geochemical sample storage. Pre-printed for data recording in the field.",
-    category: "storage",
-    tags: ["envelopes", "geochemistry"],
-  },
-  {
-    code: "GEO-FORENS",
-    name: "Forensic Sample Bags",
-    description: "Tamper-evident forensic-grade bags for secure chain-of-custody sample storage. Suitable for high-value and sensitive mineral samples.",
-    category: "storage",
-    tags: ["sample bags", "forensic"],
-  },
-  {
-    code: "GEO-ZIPPER",
-    name: "Zipper Sample Bags",
-    description: "Resealable zipper bags for convenient and secure sample storage. Various sizes available for core chips, soil, and rock samples.",
-    category: "storage",
-    tags: ["sample bags", "zipper"],
-  },
-  {
-    code: "GEO-SAMPBAG",
-    name: "Sample Bags",
-    description: "General-purpose field sample bags for geological, soil, and mineral samples. Various sizes and materials available.",
-    category: "storage",
-    tags: ["sample bags"],
-  },
+  // Sample Storage
+  { code: "GEO-CALICO", name: "Calico Sample Bags", desc: "Breathable calico cotton bags for storing and transporting geological rock and soil samples.", cat: "storage" },
+  { code: "GEO-BULK", name: "Bulk Sample Bags", desc: "Heavy-duty bulk bags for large quantities of geological material. Various sizes available.", cat: "storage" },
+  { code: "GEO-GEOCHENV", name: "Geochem Envelopes", desc: "Kraft paper envelopes for geochemical sample storage with pre-printed data fields.", cat: "storage" },
+  { code: "GEO-FORENS", name: "Forensic Sample Bags", desc: "Tamper-evident forensic-grade bags for secure chain-of-custody sample storage.", cat: "storage" },
+  { code: "GEO-ZIPPER", name: "Zipper Sample Bags", desc: "Resealable zipper bags for convenient sample storage. Various sizes available.", cat: "storage" },
+  { code: "GEO-SAMPBAG", name: "Sample Bags", desc: "General-purpose field sample bags for geological, soil, and mineral samples.", cat: "storage" },
 
-  // ── Core & More ──────────────────────────────────────────────────
-  {
-    code: "GEO-COREMACH",
-    name: "Mobile Core Splitting Machine",
-    description: "Mobile core splitter for cross-cutting various rock core samples safely and accurately. Features a core guide and blade covers for maximum safety. Available in 220 V (2.2 kW) and 380 V. Wooden crate packaging also available.",
-    category: "core",
-    tags: ["core splitting", "machinery"],
-  },
-  {
-    code: "GEO-BLADE300CS30",
-    name: "Core Splitting Saw Blades",
-    description: "Diamond saw blades optimised for hard and soft stone. Fits all core splitting machines. Available in 300 mm and 350 mm diameters for CS30 (hard stone) and CS50 (soft stone).",
-    category: "core",
-    tags: ["core splitting", "blades"],
-  },
-  {
-    code: "GEO-CORETRAYST",
-    name: "Steel Core Trays",
-    description: "High-grade Zincalume steel core trays with deep profile, raised side walls, dual handle system, and 100% residual water drainage. Available welded or prefabricated. Various standard sizes.",
-    category: "core",
-    tags: ["core trays", "steel", "storage"],
-  },
-  {
-    code: "GEO-CORETRAYPL",
-    name: "Plastic Core Trays",
-    description: "UV-stabilised polypropylene core trays for harsh exploration drilling environments. Exceptionally durable and long-lasting. Various standard sizes available.",
-    category: "core",
-    tags: ["core trays", "plastic", "storage"],
-  },
-  {
-    code: "GEO-CTLID-1M-PL",
-    name: "Universal Lids for Core Trays",
-    description: "Plastic and steel lids for 1 m and 1.5 m core trays. Designed for safety and easy handling during transport and storage.",
-    category: "core",
-    tags: ["core trays", "lids"],
-  },
-  {
-    code: "GEO-BRNQGUIDE",
-    name: "Broken Core Guides",
-    description: "Aluminium guides for holding and guiding broken core through a spinning diamond blade. Holds core up to 450 mm long. Available in NQ (46.7 mm) and HQ (63.5 mm) core diameters.",
-    category: "core",
-    tags: ["core guides", "splitting"],
-  },
-  {
-    code: "GEO-GUIDEHQV",
-    name: '"V" Core Guides',
-    description: 'V-shaped open-design guides for accurate lengthwise cutting on core cutting machines. Keeps hands safely away from the blade. Available for HQ-BQ (36.4–63.5 mm) and PQ (86 mm) core diameters.',
-    category: "core",
-    tags: ["core guides", "splitting"],
-  },
-  {
-    code: "GEO-CORELIFTER",
-    name: "Core Lifter",
-    description: "Zincalume steel tool for extracting tight-fitting core samples from trays. Includes a ruler along one side and has no sharp edges. Used to lift NQ2 from NQ trays, etc.",
-    category: "core",
-    tags: ["core handling"],
-  },
-  {
-    code: "GEO-ROCKET",
-    name: "Core Orientator / Rocket Launcher",
-    description: "Non-magnetic portable device for accurate core orientation and dip measurement. Holds BQ to PQ core sizes up to 60 cm. Adjustable dip angle 0°–90°. Heavy-duty lockable hinges rated to 150 kg. 2.7 kg.",
-    category: "core",
-    tags: ["core orientation", "measurement"],
-  },
-  {
-    code: "GEO-KENH",
-    name: "Kenometer Core Orientation Tool",
-    description: "Gives Alpha & Beta angle measurements. Anodised aluminium body with laser-etched permanent graduations and ellipses for quick measurements. Available for HQ and NQ 2 core sizes.",
-    category: "core",
-    tags: ["core orientation", "measurement"],
-  },
-  {
-    code: "GEO-COREBLOCK",
-    name: "Plastic Core Blocks",
-    description: "Universal yellow/green core blocks with space to indicate depth, loss/gain, and core recovered. 500 per pack.",
-    category: "core",
-    tags: ["core", "labelling"],
-  },
-  {
-    code: "GEO-GONPLEXI",
-    name: "Goniometer (Ezy Logger)",
-    description: "Perspex core measurement tool measuring Alpha and Beta angles, used to read bedding, structure, and fractures on core samples. Available in standard BQ/NQ/HQ/PQ sizes; custom sizes on request.",
-    category: "core",
-    tags: ["core measurement", "goniometer"],
-  },
-  {
-    code: "GEO-CHIPTRAY",
-    name: "Rock Chip Trays",
-    description: "UV-stabilised clear plastic trays with 10 compartments, interlockable to 20 compartments. Sturdy hinges and clips. 100 per pack.",
-    category: "core",
-    tags: ["sample trays", "rock chips"],
-  },
-  {
-    code: "GEO-RIFFLER3",
-    name: "Riffler Split 3 Tier",
-    description: "Mobile riffler on wheels with two bins. Delivers 12.5% (1/8th) sample split straight into a bin or bag in one pass. 16-slot, 32.2 mm. 650 mm × 1000 mm × 650 mm, 44 kg.",
-    category: "core",
-    tags: ["splitting", "sampling"],
-  },
-  {
-    code: "GEO-SIEVE200MM",
-    name: "Sieves",
-    description: "200 mm diameter test sieves in steel or brass with 5 mm punched plate. Lids and receivers available. Various mesh apertures and types available on request.",
-    category: "core",
-    tags: ["sieves", "screening"],
-  },
-  {
-    code: "GEO-FLEXISIEVERI",
-    name: "Flexi Sieve Ring & Lid",
-    description: "Reusable 200 mm plastic sieve system with lid, receiver, and two clip-together rings. Mesh sold separately.",
-    category: "core",
-    tags: ["sieves", "screening"],
-  },
-  {
-    code: "GEO-OPTSQUARE",
-    name: "Optical Square",
-    description: "Surveying tool for setting out right angles and determining offsets. Ideal for rudimentary grids or sampling programs.",
-    category: "core",
-    tags: ["surveying", "measurement"],
-  },
-  {
-    code: "GEO-ACIDBOTTLE",
-    name: "Acid Bottle",
-    description: "30 ml plastic acid bottle with removable tip for easy refilling. Used for acid testing of rock samples in the field.",
-    category: "core",
-    tags: ["lab", "testing"],
-  },
-  {
-    code: "OTH-ALUSCOOP1LT",
-    name: "Metal Measuring Scoop",
-    description: "1-litre stainless steel measuring scoop for convenient scooping and measuring of quantities in the field or laboratory.",
-    category: "core",
-    tags: ["lab", "measurement"],
-  },
-  {
-    code: "GEO-MDT410X285",
-    name: "Metal Sample Drying Tray",
-    description: "Stainless steel tray (410 mm × 285 mm × 75 mm) for drying samples in the lab or field.",
-    category: "core",
-    tags: ["lab", "drying"],
-  },
-  {
-    code: "GEO-MAGGLASSX40",
-    name: "Hand Lens Magnifiers",
-    description: "Superior optical quality field magnifiers. Options include 40× plastic illuminated loupe (built-in LEDs), 20× single metal lens, 10× single metal lens, and 10×/20× double metal lens. Chrome-plated frames with leather or lined cases.",
-    category: "core",
-    tags: ["magnifier", "field tools"],
-  },
-  {
-    code: "GEO-AUG-BT131",
-    name: "Motorised Earth Auger (STIHL BT131)",
-    description: "Powerful 1.4 kW petrol engine handheld earth auger for digging holes for posts, fences, and field sampling. Lightweight for large-scale work. 90 mm auger bit sold separately.",
-    category: "core",
-    tags: ["auger", "drilling"],
-  },
-  {
-    code: "PLA-SOILSAM50",
-    name: "Soil Sampler",
-    description: "Stainless steel 500 mm soil sampler for determining soil composition, pH, and nutrient content. Insert vertically, twist 180°, withdraw sample.",
-    category: "core",
-    tags: ["soil", "sampling"],
-  },
-  {
-    code: "GEO-PINCH-1.5",
-    name: "Aluminium Pinch Bars",
-    description: "Lightweight aluminium pinch bars for underground barring with ribbed hexagonal tube for secure grip. Available in 1.2 m, 1.5 m, 1.8 m, and 2.4 m lengths. Includes hand guards.",
-    category: "core",
-    tags: ["underground", "safety"],
-  },
-  {
-    code: "GEO-STEM-90",
-    name: "Stemming Plugs",
-    description: "Plastic stemming plugs for retaining explosive energy in blast holes. 90 mm (red) and 120 mm (grey) sizes. Redirects energy into hole walls for enhanced containment.",
-    category: "core",
-    tags: ["blasting", "mining"],
-  },
-  {
-    code: "GEO-HOSE20X30",
-    name: "Anti-Static Loading Hose",
-    description: "30 m roll of anti-static PVC hose for loading explosives in mine blasting. Complies with BS2050/1978 resistance requirements (3×10³ to 1×10⁶ Ω).",
-    category: "core",
-    tags: ["blasting", "hose"],
-  },
-  {
-    code: "GEO-MEASUREWHL",
-    name: "Rotosure Measuring Wheel",
-    description: "Measuring wheel with 1 m circumference for distances up to 10 000 m. Ideal alternative to long tape measures for open field and mining use.",
-    category: "core",
-    tags: ["measurement", "surveying"],
-  },
-  {
-    code: "GEO-MEASURE50M",
-    name: "Measuring Tapes 50 m",
-    description: "50 m fibreglass and steel measuring tapes in durable plastic frames with sturdy handle for easy winding. Both fibreglass and steel options available.",
-    category: "core",
-    tags: ["measurement", "tape"],
-  },
-  {
-    code: "E30",
-    name: "Estwing Rock Picks & Crack Hammers",
-    description: "USA-forged one-piece steel rock picks and crack hammers. Models include leather-grip (E30), vinyl shock-reduction grip (E3-22P), long vinyl handle (E3-23LP), and 4lb crack hammer (B3-4LB). Popular with prospectors and contractors.",
-    category: "core",
-    tags: ["rock picks", "hammers", "estwing"],
-  },
-  {
-    code: "GEO-NITON",
-    name: "Niton X-Ray Fluorescence Spectrometers",
-    description: "Portable XRF spectrometers for rapid in-field elemental analysis of rock and soil samples. Contact us for current models and pricing.",
-    category: "core",
-    tags: ["XRF", "analysis", "spectrometer"],
-  },
-  {
-    code: "GEO-WORKWEAR",
-    name: "Bisley Workwear",
-    description: "Professional field workwear including sleeveless field vests, Miner's belts, and vehicle first aid kits. Designed for comfort and safety in mining and geological field operations.",
-    category: "core",
-    tags: ["workwear", "safety", "PPE"],
-  },
+  // Core & More
+  { code: "GEO-COREMACH", name: "Mobile Core Splitting Machine", desc: "Splits rock core samples safely and accurately. Core guide and blade covers for maximum safety. 220V (2.2kW) and 380V available.", cat: "core" },
+  { code: "GEO-BLADE300CS30", name: "Core Splitting Saw Blades", desc: "Diamond blades for hard and soft stone. Fits all core splitters. 300mm and 350mm diameters.", cat: "core" },
+  { code: "GEO-CORETRAYST", name: "Steel Core Trays", desc: "Zincalume steel trays with deep profile, raised side walls, dual handle system, 100% water drainage. Welded or prefabricated.", cat: "core" },
+  { code: "GEO-CORETRAYPL", name: "Plastic Core Trays", desc: "UV-stabilised polypropylene trays for harsh exploration drilling environments. Various standard sizes.", cat: "core" },
+  { code: "GEO-CTLID-1M-PL", name: "Universal Lids for Core Trays", desc: "Plastic and steel lids for 1m and 1.5m core trays. For safety and easy handling during transport.", cat: "core" },
+  { code: "GEO-BRNQGUIDE", name: "Broken Core Guides", desc: "Guides broken core through a spinning diamond blade. Holds up to 450mm. NQ (46.7mm) and HQ (63.5mm) sizes.", cat: "core" },
+  { code: "GEO-GUIDEHQV", name: '"V" Core Guides', desc: 'V-shaped guides for accurate lengthwise core cutting. HQ-BQ (36.4–63.5mm) and PQ (86mm) sizes.', cat: "core" },
+  { code: "GEO-CORELIFTER", name: "Core Lifter", desc: "Zincalume steel tool for extracting tight-fitting core from trays. Includes ruler, no sharp edges.", cat: "core" },
+  { code: "GEO-ROCKET", name: "Core Orientator / Rocket Launcher", desc: "Non-magnetic device for core orientation and dip measurement. BQ to PQ sizes, up to 60cm. 0°–90° adjustable dip. 2.7kg.", cat: "core" },
+  { code: "GEO-KENH", name: "Kenometer Core Orientation Tool", desc: "Measures Alpha & Beta angles. Anodised aluminium body with laser-etched graduations. HQ and NQ 2 sizes.", cat: "core" },
+  { code: "GEO-COREBLOCK", name: "Plastic Core Blocks", desc: "Universal yellow/green core blocks indicating depth, loss/gain, and core recovered. 500 per pack.", cat: "core" },
+  { code: "GEO-GONPLEXI", name: "Goniometer (Ezy Logger)", desc: "Perspex core tool measuring Alpha and Beta angles, used to read bedding, structure, and fractures. BQ/NQ/HQ/PQ sizes.", cat: "core" },
+  { code: "GEO-CHIPTRAY", name: "Rock Chip Trays", desc: "UV-stabilised clear plastic trays with 10 interlockable compartments. Sturdy hinges and clips. 100 per pack.", cat: "core" },
+  { code: "GEO-RIFFLER3", name: "Riffler Split 3 Tier", desc: "Mobile riffler on wheels. 12.5% (1/8th) split in one pass. 16-slot, 32.2mm. 650×1000×650mm, 44kg.", cat: "core" },
+  { code: "GEO-SIEVE200MM", name: "Sieves", desc: "200mm diameter test sieves in steel or brass with 5mm punched plate. Lids and receivers available.", cat: "core" },
+  { code: "GEO-FLEXISIEVERI", name: "Flexi Sieve Ring & Lid", desc: "Reusable 200mm plastic sieve system with lid, receiver, and two clip-together rings. Mesh sold separately.", cat: "core" },
+  { code: "GEO-OPTSQUARE", name: "Optical Square", desc: "Surveying tool for setting out right angles and offsets. For rudimentary grids and sampling programs.", cat: "core" },
+  { code: "GEO-ACIDBOTTLE", name: "Acid Bottle", desc: "30ml plastic acid bottle with removable tip for easy refilling. For acid testing of rock samples.", cat: "core" },
+  { code: "OTH-ALUSCOOP1LT", name: "Metal Measuring Scoop", desc: "1-litre stainless steel measuring scoop for scooping and measuring quantities.", cat: "core" },
+  { code: "GEO-MDT410X285", name: "Metal Sample Drying Tray", desc: "Stainless steel tray (410mm × 285mm × 75mm) for drying samples in lab or field.", cat: "core" },
+  { code: "GEO-MAGGLASSX40", name: "Hand Lens Magnifiers", desc: "Superior optical quality field magnifiers. Options: 40× illuminated loupe, 20× single, 10× single, 10×/20× double. Chrome-plated frames.", cat: "core" },
+  { code: "GEO-AUG-BT131", name: "Motorised Earth Auger (STIHL BT131)", desc: "1.4kW petrol handheld earth auger. Lightweight for large-scale work. 90mm auger bit sold separately.", cat: "core" },
+  { code: "PLA-SOILSAM50", name: "Soil Sampler", desc: "Stainless steel 500mm soil sampler. Insert vertically, twist 180°, withdraw sample.", cat: "core" },
+  { code: "GEO-PINCH-1.5", name: "Aluminium Pinch Bars", desc: "Lightweight aluminium pinch bars with handguards for underground barring. 1.2m, 1.5m, 1.8m, 2.4m lengths.", cat: "core" },
+  { code: "GEO-STEM-90", name: "Stemming Plugs", desc: "Plastic stemming plugs for retaining explosive energy in blast holes. 90mm (red) and 120mm (grey).", cat: "core" },
+  { code: "GEO-HOSE20X30", name: "Anti-Static Loading Hose", desc: "30m anti-static PVC hose for loading explosives. Complies with BS2050/1978 resistance requirements.", cat: "core" },
+  { code: "GEO-MEASUREWHL", name: "Rotosure Measuring Wheel", desc: "1m circumference measuring wheel for distances up to 10 000m. Alternative to long tape measures.", cat: "core" },
+  { code: "GEO-MEASURE50M", name: "Measuring Tapes 50m", desc: "Fibreglass and steel 50m measuring tapes in durable plastic frames with sturdy handle.", cat: "core" },
+  { code: "E30", name: "Estwing Rock Picks & Crack Hammers", desc: "USA-forged one-piece steel picks and hammers. Leather-grip (E30), vinyl (E3-22P), long vinyl (E3-23LP), 4lb crack hammer (B3-4LB).", cat: "core" },
+  { code: "GEO-NITON", name: "Niton XRF Spectrometers", desc: "Portable X-Ray Fluorescence spectrometers for rapid in-field elemental analysis of rock and soil.", cat: "core" },
+  { code: "GEO-WORKWEAR", name: "Bisley Workwear & Safety", desc: "Field vests, Miner's belts, and vehicle first aid kits for mining and geological fieldwork.", cat: "core" },
 
-  // ── Exploration & Navigation ─────────────────────────────────────
-  {
-    code: "GEO-GARMETSE",
-    name: "Garmin eTrex GPS Units",
-    description: "Handheld GPS units from the Garmin eTrex range. Models include eTrex SE, eTrex 22x, and eTrex 32x for reliable navigation and waypoint marking in the field.",
-    category: "navigation",
-    tags: ["GPS", "navigation", "garmin"],
-  },
-  {
-    code: "GEO-GARMAPS65S",
-    name: "Garmin GPS Map 65s",
-    description: "Advanced handheld GPS unit with multi-band GNSS support and large colour display. Ideal for detailed mapping and navigation in complex geological terrain.",
-    category: "navigation",
-    tags: ["GPS", "navigation", "garmin"],
-  },
-  {
-    code: "GEO-BRUNTONTA3",
-    name: "Brunton TruArc Compasses",
-    description: "Brunton TruArc compass range: TruArc 3 (tool-free adjustable declination), TruArc 10 (Ever-North magnet, Romer scales, GPS confidence circles), TruArc 15 (sighting mirror, clinometer, level, engineer's ruler).",
-    category: "navigation",
-    tags: ["compass", "brunton", "navigation"],
-  },
-  {
-    code: "GEO-BRUNTON5010",
-    name: "Brunton Pocket Transit Compasses",
-    description: "Professional geology transits: 5008 ComPro (polyfibre, Strike & Dip), 5020 Standard (aluminium), 5010 Geo (hinge 220°, Strike & Dip, Trend & Plunge), 5012 Axis (full 360°, simultaneous Strike & Dip, Dip Direction, Trend & Plunge, Bearing & Angle).",
-    category: "navigation",
-    tags: ["compass", "transit", "brunton"],
-  },
-  {
-    code: "GEO-BRUNT-OM-SL",
-    name: "Brunton Omnislope & Omnisight",
-    description: "Brunton OMNISLOPE sighting inclinometer for Slope, Forestry Chain, and Percentage measurements. OMNISIGHT sighting compass with MILS, Quadrant, Reciprocal Azimuth, and Azimuth.",
-    category: "navigation",
-    tags: ["inclinometer", "sighting", "brunton"],
-  },
-  {
-    code: "GEO-BRUNTON3051",
-    name: "Brunton Non-Magnetic Tripod",
-    description: "Aluminium and brass non-magnetic tripod for zero compass interference. Adjustable legs, brass cap with standard threads for Brunton instrument compatibility. 3040 Ball & Socket Mount required for Pocket Transit.",
-    category: "navigation",
-    tags: ["tripod", "brunton", "surveying"],
-  },
-  {
-    code: "GEO-BRUNTON3040",
-    name: "Brunton Ball & Socket Mount",
-    description: "Non-magnetic aluminium and brass ball and socket mount. Rotates 360° vertically and horizontally, lockable. Connects Brunton Pocket Transit to monopods or tripods.",
-    category: "navigation",
-    tags: ["mount", "brunton", "tripod"],
-  },
-  {
-    code: "GEO-BRUNTONWRC",
-    name: "Brunton Weather-Resistant Transit Case",
-    description: "Water-resistant case for Brunton 5008 & 5020 transits. Built-in belt loop (up to 50.8 mm wide), optional removable ALICE clip, snap closure. Better than leather in moist environments.",
-    category: "navigation",
-    tags: ["case", "brunton", "accessory"],
-  },
-  {
-    code: "GEO-BRUNTON4090",
-    name: "Brunton 4090 Collapsible Jacob's Staff",
-    description: "Lightweight 3-section aluminium Jacob's Staff for measuring rock layers. Folds to fit in a backpack, extends as trekking pole. 250 mm markings for 1.5 m extension. Standard 1/4-20 UNC thread. EVA handle and padded wrist strap.",
-    category: "navigation",
-    tags: ["jacob's staff", "surveying", "brunton"],
-  },
-  {
-    code: "GEO-BRUNTON3060",
-    name: "Brunton 3060 Thimble Adaptor",
-    description: "Jacob's Staff thimble adaptor (38 × 24 mm, 22.7 g). Press or glue onto any staff with tapered end. Standard 1/4-20 UNC thread for attaching Brunton instruments.",
-    category: "navigation",
-    tags: ["jacob's staff", "brunton", "accessory"],
-  },
-  {
-    code: "GEO-BRUNTONGS",
-    name: "Brunton Grain Size Card",
-    description: "Transparent card stock with printed negative and positive sides for visual classification of sediments by size and shape in the field.",
-    category: "navigation",
-    tags: ["grain size", "sediment", "brunton"],
-  },
-  {
-    code: "GEO-BRUNTONMMT",
-    name: "Brunton Map Multi-Tool Card",
-    description: "Combines inch/cm rulers, map scales, UTM grid Romer scales, and a 360° protractor with strike & dip crosshairs. Unique cut-outs for easy map plotting.",
-    category: "navigation",
-    tags: ["map tools", "brunton"],
-  },
-  {
-    code: "GEO-BRUNTONQR",
-    name: "Brunton Quick Reference Cards",
-    description: "8-page reference card set for navigation with any map and compass. Calculate distance, determine location on topographic maps, and access field tips for outdoor exploration.",
-    category: "navigation",
-    tags: ["reference cards", "navigation", "brunton"],
-  },
-  {
-    code: "GEO-MAGLITE",
-    name: "Maglite Torches",
-    description: "Extensive range of Maglite quality torches for field use. Spare parts also available. Contact us for specific models and pricing.",
-    category: "navigation",
-    tags: ["torch", "lighting"],
-  },
+  // Exploration & Navigation
+  { code: "GEO-GARMETSE", name: "Garmin eTrex GPS Units", desc: "Handheld GPS units: eTrex SE, eTrex 22x, eTrex 32x for reliable field navigation and waypoint marking.", cat: "navigation" },
+  { code: "GEO-GARMAPS65S", name: "Garmin GPS Map 65s", desc: "Advanced handheld GPS with multi-band GNSS and large colour display. For detailed mapping and navigation.", cat: "navigation" },
+  { code: "GEO-BRUNTONTA3", name: "Brunton TruArc Compasses", desc: "TruArc 3 (tool-free declination), TruArc 10 (Ever-North magnet, Romer scales), TruArc 15 (mirror, clinometer, level, ruler).", cat: "navigation" },
+  { code: "GEO-BRUNTON5010", name: "Brunton Pocket Transit Compasses", desc: "5008 ComPro, 5020 Standard, 5010 Geo, 5012 Axis. Simultaneous Strike & Dip, Dip Direction, Trend & Plunge measurements.", cat: "navigation" },
+  { code: "GEO-BRUNT-OM-SL", name: "Brunton Omnislope & Omnisight", desc: "OMNISLOPE sighting inclinometer (Slope, Forestry, Percentage). OMNISIGHT compass (MILS, Azimuth, Reciprocal).", cat: "navigation" },
+  { code: "GEO-BRUNTON3051", name: "Brunton Non-Magnetic Tripod", desc: "Aluminium and brass non-magnetic tripod for zero compass interference. Adjustable legs, standard thread cap.", cat: "navigation" },
+  { code: "GEO-BRUNTON3040", name: "Brunton Ball & Socket Mount", desc: "Non-magnetic 360° mount for connecting Brunton Pocket Transits to monopods or tripods.", cat: "navigation" },
+  { code: "GEO-BRUNTONWRC", name: "Brunton Weather-Resistant Transit Case", desc: "Water-resistant case for Brunton 5008 & 5020. Built-in belt loop (up to 50.8mm), ALICE clip, snap closure.", cat: "navigation" },
+  { code: "GEO-BRUNTON4090", name: "Brunton 4090 Collapsible Jacob's Staff", desc: "3-section aluminium Jacob's Staff for measuring rock layers. Folds to fit in backpack, extends as trekking pole.", cat: "navigation" },
+  { code: "GEO-BRUNTON3060", name: "Brunton 3060 Thimble Adaptor", desc: "Jacob's Staff thimble adaptor (38×24mm, 22.7g). Standard 1/4-20 UNC thread for Brunton instruments.", cat: "navigation" },
+  { code: "GEO-BRUNTONGS", name: "Brunton Grain Size Card", desc: "Transparent card for visual sediment classification by size and shape. Positive and negative sides.", cat: "navigation" },
+  { code: "GEO-BRUNTONMMT", name: "Brunton Map Multi-Tool Card", desc: "Combines rulers, map scales, UTM Romer grids, and 360° protractor with strike & dip crosshairs.", cat: "navigation" },
+  { code: "GEO-BRUNTONQR", name: "Brunton Quick Reference Cards", desc: "8-page navigation reference set. Calculate distance and location on topographic maps.", cat: "navigation" },
+  { code: "GEO-MAGLITE", name: "Maglite Torches", desc: "Extensive range of Maglite quality torches for field use. Spare parts available.", cat: "navigation" },
 
-  // ── Gold Mining Accessories ───────────────────────────────────────
-  {
-    code: "GEO-GLDSH-145",
-    name: "Gold Shaker Table — Gemini Type",
-    description: "Fine gold concentrate cleanup and sand separation shaker tables. 145 kg/h model (1.1 kW) and 350 kg/h model (3.0 kW with variable speed drive). Adjustable spray bars, water pump, inline filtration. Optional recirculation bin. Available 220 V AC or 3-phase.",
-    category: "gold",
-    tags: ["shaker table", "gold recovery", "processing"],
-  },
-  {
-    code: "GEO-GLDSH-450",
-    name: "Gold Shaker Table — Rougher Type",
-    description: "Heavy-duty material separation shaker table processing 500–750 kg/h. 2.2 kW 380 VAC motor. Riffles, horizontal shaking motion, adjustable spray bar, valve bank, variable speed drive, and fully adjustable deck.",
-    category: "gold",
-    tags: ["shaker table", "gold recovery", "processing"],
-  },
-  {
-    code: "GEO-FURN-01",
-    name: "Tiny Tim Furnace",
-    description: "Compact LP gas furnace for melting aluminium, gold, silver, brass, and copper. Includes blower, burner, and LP gas regulator. Max crucible diameter 110 mm (up to A3). Bundle option includes A3 graphite crucible and crucible tongs.",
-    category: "gold",
-    tags: ["furnace", "smelting", "gold"],
-  },
-  {
-    code: "GEO-FURN-03",
-    name: "Large Gold Melting Furnace",
-    description: "LP gas furnace reaching 1 350 °C. Melts gold, silver, copper, brass, aluminium, and bronze. Works with standard 9–48 kg LP cylinders. Suitable for A6, A8, A10 crucible sizes. Includes foundry chamber, lid, spacer block, HP LPG regulator, burner, and hose.",
-    category: "gold",
-    tags: ["furnace", "smelting", "gold"],
-  },
-  {
-    code: "GEO-SNUFBOT-01",
-    name: "Snuffer Bottle Kits",
-    description: "Gold collection and transfer kits. Kit 1: 150 ml snuffer bottle, 3 ml pipette, finds bottle. Kit 2 adds a 30× loupe. Essential for collecting gold flakes, fine dust, and small nuggets from Miller Tables, sluices, and gold pans.",
-    category: "gold",
-    tags: ["gold collection", "snuffer"],
-  },
-  {
-    code: "GEO-DETECT-01",
-    name: "Bounty Hunter Pinpointer",
-    description: "Compact adjustable-sensitivity pinpointer for locating gold, coins, and small finds while metal detecting. Audio and vibration indicators. Single-knob sensitivity control. 9 V battery required.",
-    category: "gold",
-    tags: ["metal detector", "pinpointer"],
-  },
-  {
-    code: "GEO-FPULSE",
-    name: "Fisher F-Pulse Pinpointer",
-    description: "Fully waterproof pinpointer (submersible to 6 feet). Pulse induction, beep/vibrate/both modes, lost mode alarm, 3 sensitivity levels, single button operation. Works in saltwater and freshwater.",
-    category: "gold",
-    tags: ["metal detector", "pinpointer", "waterproof"],
-  },
-  {
-    code: "GEO-DIAMSEL",
-    name: "Diamond Selector 2",
-    description: "Electronic diamond tester for identifying genuine diamonds vs moissanite and other stones. Fast, reliable results in the field.",
-    category: "gold",
-    tags: ["diamond", "tester", "gems"],
-  },
-  {
-    code: "GEO-TEKEUROPRO",
-    name: "Teknetics EuroTek Pro Metal Detector",
-    description: "Advanced all-terrain metal detector with iron audio and depth indicator. Excellent performance for gold prospecting and relic hunting.",
-    category: "gold",
-    tags: ["metal detector", "teknetics"],
-  },
-  {
-    code: "GEO-TEKEURO",
-    name: "Teknetics EuroTek Metal Detector",
-    description: "Versatile entry-level metal detector for coin shooting and prospecting. Lightweight design with ground balance capability.",
-    category: "gold",
-    tags: ["metal detector", "teknetics"],
-  },
-  {
-    code: "GEO-FISHERBUG",
-    name: "Fisher Gold Bug Gold Detectors",
-    description: "Dedicated gold detector with high operating frequency for detection of small gold nuggets and flakes. Manual and automatic ground balance.",
-    category: "gold",
-    tags: ["metal detector", "gold detector", "fisher"],
-  },
-  {
-    code: "GEO-PANN-03",
-    name: "Trekker Gold River Sluice",
-    description: "High-performance river sluice box with riffles and miner's moss. Combos available: Panning Combo (includes 15″ Premium Gold Pan, 10″ Gold Pan, Snuffer Bottle Kit) and Sluice Combo (14″ Gold Pan, Gold Pocket Scale).",
-    category: "gold",
-    tags: ["sluice", "prospecting"],
-  },
-  {
-    code: "GEO-SLC-RIV-01",
-    name: "Mini Pocket Gold River Sluices",
-    description: "Lightweight <500 g 3D-printed PLA sluice for alluvial gold prospecting. Fits in a small backpack. Integrated mini flare and riffles. Mini Pocket and Mini Vortex (enhanced vortex riffles) versions available.",
-    category: "gold",
-    tags: ["sluice", "portable", "prospecting"],
-  },
-  {
-    code: "GEO-PANN-05",
-    name: "Gold Panning Kits",
-    description: "Complete panning kits including 10″ and 15″ Premium gold pans and 14″ classifier pan. Snuffer bottle kits and Prospectors Gold Pan Bundle (includes pocket sluice) also available.",
-    category: "gold",
-    tags: ["panning", "gold", "kit"],
-  },
-  {
-    code: "GEO-SLC-SGL-01",
-    name: "High Banker Sluices",
-    description: "1000 mm × 300 mm sluice boxes processing 750–1200 kg/h. Single and double models available, with or without 20 000 L petrol pump and fittings. Miner's moss or fine gold matting included.",
-    category: "gold",
-    tags: ["sluice", "highbanker", "processing"],
-  },
-  {
-    code: "GEO-CLN-01",
-    name: "Gold Prospecting Cleanup Systems",
-    description: "Complete cleanup solutions: Sluice Box (pump + vortex/fine gold matting, 650×150 mm), Adventure Kit (tote, 10 L bucket, 12 V battery, charger), Fine Gold Miller Table (650×450 mm), and Blue Bowl System (210 mm dia.). All compact and portable.",
-    category: "gold",
-    tags: ["cleanup", "gold recovery"],
-  },
-  {
-    code: "GEO-MAT-01",
-    name: "Gold Sluice Box Matting",
-    description: "High-quality sluice matting for efficient gold trapping. Options: Fine Gold (yellow, 300×1000 mm), Miner's Moss (8 mm thick), Fine-Ribbed (ultra-fine gold/black sand), Vortex Rubber (300×150 mm), and V-Ribbed (150×150 mm).",
-    category: "gold",
-    tags: ["matting", "sluice", "gold recovery"],
-  },
-  {
-    code: "GEO-CH-MILLCR",
-    name: "Sample Chain Mill Crusher",
-    description: "Portable chain mill crusher attached to a baby grinder (cordless or corded, not included). Crushes rock up to 40 mm diameter and mills to ~300 microns for gold ore sampling. Adjustable torque arms, spare parts available.",
-    category: "gold",
-    tags: ["crusher", "milling", "sampling"],
-  },
-  {
-    code: "GEO-VBCL-SCRN",
-    name: "Vibrating Classifier Screen",
-    description: "4-stage vibrating classifier screen with mesh sizes 1 mm, 500 micron, 150 micron, and 75 micron. Single-phase vibrating mechanism. Ensures equal particle sizes before shaker tables for optimised gold recovery.",
-    category: "gold",
-    tags: ["classifier", "screening", "gold recovery"],
-  },
+  // Gold Mining Accessories
+  { code: "GEO-GLDSH-145", name: "Gold Shaker Table — Gemini Type", desc: "Fine gold cleanup shaker tables. 145kg/h (1.1kW) and 350kg/h (3.0kW, variable speed). Adjustable spray bars, inline filtration. 220V or 3-phase.", cat: "gold" },
+  { code: "GEO-GLDSH-450", name: "Gold Shaker Table — Rougher Type", desc: "500–750kg/h processing capacity. 2.2kW 380VAC motor. Riffles, horizontal shaking, adjustable deck and tilt.", cat: "gold" },
+  { code: "GEO-FURN-01", name: "Tiny Tim Furnace", desc: "Compact LP gas furnace for melting aluminium, gold, silver, brass, copper. Up to A3 crucible (110mm max dia). Bundle includes crucible and tongs.", cat: "gold" },
+  { code: "GEO-FURN-03", name: "Large Gold Melting Furnace", desc: "LP gas furnace up to 1 350°C. Melts gold, silver, copper, brass, aluminium, bronze. Fits A6/A8/A10 crucibles.", cat: "gold" },
+  { code: "GEO-SNUFBOT-01", name: "Snuffer Bottle Kits", desc: "Kit 1: 150ml snuffer bottle, 3ml pipette, finds bottle. Kit 2 adds a 30× loupe. For gold flakes, dust, and nuggets.", cat: "gold" },
+  { code: "GEO-DETECT-01", name: "Bounty Hunter Pinpointer", desc: "Compact pinpointer with single-knob sensitivity, audio and vibration indicators. 9V battery.", cat: "gold" },
+  { code: "GEO-FPULSE", name: "Fisher F-Pulse Pinpointer", desc: "Fully waterproof (6 feet). Pulse induction, beep/vibrate modes, lost mode alarm, 3 sensitivity levels.", cat: "gold" },
+  { code: "GEO-DIAMSEL", name: "Diamond Selector 2", desc: "Electronic diamond tester for identifying genuine diamonds vs moissanite and other stones.", cat: "gold" },
+  { code: "GEO-TEKEUROPRO", name: "Teknetics EuroTek Pro Detector", desc: "All-terrain metal detector with iron audio and depth indicator for gold prospecting and relic hunting.", cat: "gold" },
+  { code: "GEO-TEKEURO", name: "Teknetics EuroTek Detector", desc: "Versatile metal detector for coin shooting and prospecting. Ground balance capability.", cat: "gold" },
+  { code: "GEO-FISHERBUG", name: "Fisher Gold Bug Detectors", desc: "High-frequency gold detector for small nuggets and flakes. Manual and automatic ground balance.", cat: "gold" },
+  { code: "GEO-PANN-03", name: "Trekker Gold River Sluice", desc: "High-performance river sluice with riffles and miner's moss. Panning Combo and Sluice Combo sets available.", cat: "gold" },
+  { code: "GEO-SLC-RIV-01", name: "Mini Pocket Gold River Sluices", desc: "Lightweight <500g 3D-printed PLA sluice for alluvial gold. Mini Pocket and Mini Vortex versions.", cat: "gold" },
+  { code: "GEO-PANN-05", name: "Gold Panning Kits", desc: "Complete kits: 10\", 15\" gold pans, 14\" classifier pan, snuffer bottle. Prospectors Bundle also available.", cat: "gold" },
+  { code: "GEO-SLC-SGL-01", name: "High Banker Sluices", desc: "1000×300mm sluice boxes, 750–1200kg/h. Single and double models with or without 20 000L petrol pump.", cat: "gold" },
+  { code: "GEO-CLN-01", name: "Gold Prospecting Cleanup Systems", desc: "Sluice Box, Adventure Kit, Fine Gold Miller Table, and Blue Bowl System. Compact, portable, and complete.", cat: "gold" },
+  { code: "GEO-MAT-01", name: "Gold Sluice Box Matting", desc: "Fine Gold (yellow), Miner's Moss (8mm thick), Fine-Ribbed, Vortex Rubber, and V-Ribbed matting options.", cat: "gold" },
+  { code: "GEO-CH-MILLCR", name: "Sample Chain Mill Crusher", desc: "Attaches to baby grinder. Crushes rock up to 40mm, mills to ~300 microns for gold ore sampling.", cat: "gold" },
+  { code: "GEO-VBCL-SCRN", name: "Vibrating Classifier Screen", desc: "4-stage vibrating screen: 1mm, 500 micron, 150 micron, 75 micron mesh sizes. For shaker table prep.", cat: "gold" },
 ];
 
-const categories: { id: Category; label: string; count: number }[] = [
-  { id: "all", label: "All Products", count: products.length },
-  { id: "stationery", label: "Stationery & Labelling", count: products.filter(p => p.category === "stationery").length },
-  { id: "storage", label: "Sample Storage", count: products.filter(p => p.category === "storage").length },
-  { id: "core", label: "Core & More", count: products.filter(p => p.category === "core").length },
-  { id: "navigation", label: "Exploration & Navigation", count: products.filter(p => p.category === "navigation").length },
-  { id: "gold", label: "Gold Mining Accessories", count: products.filter(p => p.category === "gold").length },
+const catMeta: { id: Cat; label: string; color: string; bg: string }[] = [
+  { id: "all", label: "All Products", color: "#0f172a", bg: "#f1f5f9" },
+  { id: "stationery", label: "Stationery & Labelling", color: "#1d4ed8", bg: "#eff6ff" },
+  { id: "storage", label: "Sample Storage", color: "#15803d", bg: "#f0fdf4" },
+  { id: "core", label: "Core & More", color: "#c2410c", bg: "#fff7ed" },
+  { id: "navigation", label: "Exploration & Navigation", color: "#6d28d9", bg: "#faf5ff" },
+  { id: "gold", label: "Gold Mining Accessories", color: "#b45309", bg: "#fffbeb" },
 ];
-
-const categoryColors: Record<Exclude<Category, "all">, string> = {
-  stationery: "bg-blue-50 text-blue-700 border-blue-200",
-  storage: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  core: "bg-orange-50 text-orange-700 border-orange-200",
-  navigation: "bg-purple-50 text-purple-700 border-purple-200",
-  gold: "bg-amber-50 text-amber-700 border-amber-200",
-};
-
-const categoryLabels: Record<Exclude<Category, "all">, string> = {
-  stationery: "Stationery & Labelling",
-  storage: "Sample Storage",
-  core: "Core & More",
-  navigation: "Exploration & Navigation",
-  gold: "Gold Mining Accessories",
-};
 
 export default function Catalogue() {
-  const [activeCategory, setActiveCategory] = useState<Category>("all");
+  const [active, setActive] = useState<Cat>("all");
   const [search, setSearch] = useState("");
 
-  const filtered = products.filter(p => {
-    const matchCat = activeCategory === "all" || p.category === activeCategory;
+  const filtered = allProducts.filter(p => {
+    const matchCat = active === "all" || p.cat === active;
     const q = search.toLowerCase();
-    const matchSearch =
-      !q ||
-      p.name.toLowerCase().includes(q) ||
-      p.code.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q) ||
-      (p.tags ?? []).some(t => t.includes(q));
+    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q);
     return matchCat && matchSearch;
   });
 
+  const counts: Record<Cat, number> = {
+    all: allProducts.length,
+    stationery: allProducts.filter(p => p.cat === "stationery").length,
+    storage: allProducts.filter(p => p.cat === "storage").length,
+    core: allProducts.filter(p => p.cat === "core").length,
+    navigation: allProducts.filter(p => p.cat === "navigation").length,
+    gold: allProducts.filter(p => p.cat === "gold").length,
+  };
+
+  const activeColor = catMeta.find(c => c.id === active)!;
+
   return (
-    <div className="bg-white min-h-[100dvh] flex flex-col text-slate-900 font-sans">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="font-serif text-2xl font-bold tracking-tight text-slate-900 hover:opacity-80 transition-opacity">
-            BIAZO <span className="text-amber-500">INTL.</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
-            <Link href="/#about" className="hover:text-amber-500 transition-colors">About</Link>
-            <Link href="/#markets" className="hover:text-amber-500 transition-colors">Markets</Link>
-            <Link href="/#products" className="hover:text-amber-500 transition-colors">Products</Link>
-            <Link href="/catalogue" className="text-amber-500 font-bold">Catalogue</Link>
-            <Link href="/#contact" className="hover:text-amber-500 transition-colors">Contact</Link>
+    <div style={{ fontFamily: "'Inter', sans-serif", color: "#0f172a", background: "#fff", minHeight: "100vh" }}>
+
+      {/* NAV */}
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(8px)", borderBottom: "1px solid #e2e8f0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 72, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <a href="/" style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 700, letterSpacing: "-0.5px", textDecoration: "none", color: "#0f172a" }}>
+            BIAZO <span style={{ color: "#f59e0b" }}>INTL.</span>
+          </a>
+          <div style={{ display: "flex", gap: 32, fontSize: 14, fontWeight: 500 }}>
+            <a href="/" style={{ color: "#0f172a", textDecoration: "none" }}>Home</a>
+            <a href="/#about" style={{ color: "#0f172a", textDecoration: "none" }}>About</a>
+            <a href="/#products" style={{ color: "#0f172a", textDecoration: "none" }}>Products</a>
+            <span style={{ color: "#f59e0b", fontWeight: 700 }}>Catalogue</span>
+            <a href="/#contact" style={{ color: "#0f172a", textDecoration: "none" }}>Contact</a>
           </div>
-          <a href="mailto:sales@biazointernational.com">
-            <Button className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-none px-6">
-              Get a Quote
-            </Button>
+          <a href="mailto:sales@biazointernational.com" style={{ background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 14, padding: "10px 24px", textDecoration: "none" }}>
+            Get a Quote
           </a>
         </div>
       </nav>
 
-      {/* Hero Banner */}
-      <section className="pt-20 bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-20">
-          <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-amber-500 text-sm mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Home
-          </Link>
-          <motion.div initial="hidden" animate="visible" variants={fadeIn}>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium mb-6 uppercase tracking-widest">
-              <Tag className="w-4 h-4" /> Geological Catalogue 2026/27
-            </div>
-            <h1 className="text-4xl md:text-6xl font-serif font-bold leading-tight mb-6">
-              Geological <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600">Equipment</span> Catalogue
-            </h1>
-            <p className="text-slate-300 text-lg max-w-2xl mb-4">
-              Professional geological, mining, and exploration equipment — from stationery and sample storage to core handling, navigation, and gold mining accessories.
-            </p>
-            <p className="text-slate-500 text-sm italic">
-              Note: Goods supplied may vary in detail to those depicted. We do our best to portray products accurately, but suppliers may make changes after publication or provide products based on availability.
-            </p>
-          </motion.div>
+      {/* HERO */}
+      <div style={{ paddingTop: 72, background: "#0f172a", color: "#fff", padding: "72px 24px 0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 0 0" }}>
+          <a href="/" style={{ color: "#64748b", textDecoration: "none", fontSize: 14, display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 32 }}>
+            ← Back to Home
+          </a>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", border: "1px solid rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.08)", color: "#fbbf24", fontSize: 12, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", marginBottom: 24 }}>
+            📋 Geological Catalogue 2026/27
+          </div>
+          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(32px, 5vw, 60px)", fontWeight: 700, color: "#fff", lineHeight: 1.15, marginBottom: 16 }}>
+            Geological <span style={{ color: "#f59e0b" }}>Equipment</span> Catalogue
+          </h1>
+          <p style={{ color: "#94a3b8", fontSize: 17, maxWidth: 580, lineHeight: 1.7, marginBottom: 12 }}>
+            Professional geological, mining, and exploration equipment — stationery, sample storage, core handling, navigation tools, and gold mining accessories.
+          </p>
+          <p style={{ color: "#475569", fontSize: 13, fontStyle: "italic", marginBottom: 48 }}>
+            Note: Goods supplied may vary in detail to those depicted. Products are subject to availability and supplier changes.
+          </p>
 
-          {/* Stats bar */}
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-5 gap-px bg-slate-800 border-t border-slate-800">
-            {categories.slice(1).map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`bg-slate-900 px-4 py-6 text-center hover:bg-slate-800 transition-colors ${activeCategory === cat.id ? "border-b-2 border-amber-500" : ""}`}
-              >
-                <div className="text-2xl font-serif font-bold text-amber-500">{cat.count}</div>
-                <div className="text-xs text-slate-400 mt-1">{cat.label}</div>
+          {/* Stats */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", borderTop: "1px solid #1e293b" }}>
+            {catMeta.slice(1).map(c => (
+              <button key={c.id} onClick={() => setActive(c.id)} style={{ padding: "24px 16px", textAlign: "center", cursor: "pointer", background: active === c.id ? "#1e293b" : "transparent", border: "none", borderBottom: active === c.id ? "2px solid #f59e0b" : "2px solid transparent", color: "#fff" }}>
+                <div style={{ fontSize: 28, fontFamily: "Georgia, serif", fontWeight: 700, color: "#f59e0b" }}>{counts[c.id]}</div>
+                <div style={{ fontSize: 11, color: "#64748b", marginTop: 4, lineHeight: 1.3 }}>{c.label}</div>
               </button>
             ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Filter & Search Bar */}
-      <section className="sticky top-20 z-40 bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-          {/* Category tabs */}
-          <div className="flex flex-wrap gap-2">
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-4 py-2 text-sm font-medium transition-all border ${
-                  activeCategory === cat.id
-                    ? "bg-slate-900 text-white border-slate-900"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"
-                }`}
-              >
-                {cat.label}
-                <span className={`ml-2 text-xs px-1.5 py-0.5 rounded-full ${activeCategory === cat.id ? "bg-amber-500 text-slate-900" : "bg-slate-100 text-slate-500"}`}>
-                  {cat.count}
-                </span>
+      {/* FILTERS */}
+      <div style={{ position: "sticky", top: 72, zIndex: 50, background: "#fff", borderBottom: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 24px", display: "flex", gap: 8, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {catMeta.map(c => (
+              <button key={c.id} onClick={() => setActive(c.id)} style={{ padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", border: active === c.id ? `2px solid ${c.color}` : "2px solid #e2e8f0", background: active === c.id ? c.bg : "#fff", color: active === c.id ? c.color : "#64748b", borderRadius: 0 }}>
+                {c.label} <span style={{ marginLeft: 4, fontSize: 11 }}>({counts[c.id]})</span>
               </button>
             ))}
           </div>
+          <input
+            type="text"
+            placeholder="Search products or codes…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ padding: "9px 16px", fontSize: 13, border: "1px solid #e2e8f0", outline: "none", width: 240, fontFamily: "inherit" }}
+          />
+        </div>
+      </div>
 
-          {/* Search */}
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search products or codes…"
-              className="w-full pl-9 pr-4 py-2 border border-slate-200 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-            />
+      {/* GRID */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 24px 80px", background: "#f8fafc", minHeight: 500 }}>
+        <p style={{ color: "#64748b", fontSize: 13, marginBottom: 28 }}>
+          Showing <strong style={{ color: "#0f172a" }}>{filtered.length}</strong> product{filtered.length !== 1 ? "s" : ""}
+          {active !== "all" ? ` in ${catMeta.find(c => c.id === active)!.label}` : ""}
+          {search ? ` matching "${search}"` : ""}
+        </p>
+
+        {filtered.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "80px 24px", color: "#94a3b8" }}>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>🔍</div>
+            <p style={{ fontSize: 18 }}>No products match your search.</p>
           </div>
-        </div>
-      </section>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+            {filtered.map(p => {
+              const meta = catMeta.find(c => c.id === p.cat)!;
+              return (
+                <div key={p.code} style={{ background: "#fff", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column" }}>
+                  <div style={{ padding: "24px 24px 16px" }}>
+                    <span style={{ display: "inline-block", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, padding: "3px 8px", background: meta.bg, color: meta.color, marginBottom: 14 }}>
+                      {meta.label}
+                    </span>
+                    <div style={{ fontFamily: "Georgia, serif", fontWeight: 700, fontSize: 16, marginBottom: 6, lineHeight: 1.3 }}>{p.name}</div>
+                    <div style={{ fontSize: 11, fontFamily: "monospace", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 }}>Code: {p.code}</div>
+                    <p style={{ color: "#475569", fontSize: 13, lineHeight: 1.6 }}>{p.desc}</p>
+                  </div>
+                  <div style={{ marginTop: "auto", borderTop: "1px solid #f1f5f9", padding: "12px 24px" }}>
+                    <a
+                      href={`mailto:sales@biazointernational.com?subject=Quote: ${encodeURIComponent(p.name)} (${p.code})&body=Hello,%0D%0A%0D%0AI'd like a quote for:%0D%0A%0D%0AProduct: ${encodeURIComponent(p.name)}%0D%0ACode: ${p.code}%0D%0A%0D%0AThank you.`}
+                      style={{ color: "#0f172a", fontSize: 13, fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
+                    >
+                      Request a Quote →
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-      {/* Product Grid */}
-      <section className="flex-1 py-12 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6">
-          {filtered.length === 0 ? (
-            <div className="text-center py-24 text-slate-400">
-              <Search className="w-12 h-12 mx-auto mb-4 opacity-40" />
-              <p className="text-lg">No products match your search.</p>
-            </div>
-          ) : (
-            <>
-              <p className="text-slate-500 text-sm mb-8">
-                Showing <strong className="text-slate-900">{filtered.length}</strong> product{filtered.length !== 1 ? "s" : ""}
-                {activeCategory !== "all" ? ` in ${categoryLabels[activeCategory as Exclude<Category, "all">]}` : ""}
-                {search ? ` matching "${search}"` : ""}
-              </p>
-              <motion.div
-                layout
-                className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
-                {filtered.map((product, idx) => (
-                  <motion.div
-                    key={product.code}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: Math.min(idx * 0.04, 0.3) }}
-                    className="bg-white border border-slate-200 hover:border-amber-400 hover:shadow-lg transition-all duration-300 flex flex-col group"
-                  >
-                    <div className="p-6 flex-1">
-                      {/* Category badge */}
-                      <span className={`inline-block text-xs font-medium px-2 py-0.5 border mb-4 ${categoryColors[product.category]}`}>
-                        {categoryLabels[product.category]}
-                      </span>
-
-                      {/* Product name */}
-                      <h3 className="font-serif font-bold text-lg text-slate-900 mb-2 leading-snug group-hover:text-amber-600 transition-colors">
-                        {product.name}
-                      </h3>
-
-                      {/* Code */}
-                      <p className="text-xs font-mono text-slate-400 mb-3 uppercase tracking-wider">
-                        Code: {product.code}
-                      </p>
-
-                      {/* Description */}
-                      <p className="text-slate-600 text-sm leading-relaxed">
-                        {product.description}
-                      </p>
-
-                      {/* Tags */}
-                      {product.tags && product.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-4">
-                          {product.tags.map(tag => (
-                            <button
-                              key={tag}
-                              onClick={() => setSearch(tag)}
-                              className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 hover:bg-amber-100 hover:text-amber-700 transition-colors"
-                            >
-                              {tag}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* CTA */}
-                    <div className="border-t border-slate-100 px-6 py-4">
-                      <a
-                        href={`mailto:sales@biazointernational.com?subject=Quote Request: ${encodeURIComponent(product.name)} (${product.code})&body=Hello,%0D%0A%0D%0AI would like to request a quote for:%0D%0A%0D%0AProduct: ${encodeURIComponent(product.name)}%0D%0ACode: ${product.code}%0D%0A%0D%0APlease send pricing and availability.%0D%0A%0D%0AThank you.`}
-                        className="inline-flex items-center gap-2 text-sm font-bold text-slate-900 hover:text-amber-600 transition-colors group/link"
-                      >
-                        Request a Quote <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-                      </a>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </>
-          )}
-        </div>
-      </section>
-
-      {/* Contact CTA */}
-      <section className="bg-slate-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+      {/* CONTACT CTA */}
+      <div style={{ background: "#0f172a", color: "#fff", padding: "60px 24px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 32 }}>
           <div>
-            <h2 className="text-3xl font-serif font-bold mb-2">Need a custom quote?</h2>
-            <p className="text-slate-400">Our team is ready to help with pricing, availability, and bulk orders.</p>
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: 30, fontWeight: 700, marginBottom: 8 }}>Need a custom quote?</h2>
+            <p style={{ color: "#64748b", fontSize: 16 }}>Our team is ready to help with pricing, availability, and bulk orders.</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <a href="mailto:sales@biazointernational.com">
-              <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-none h-14 px-8">
-                Email Us
-              </Button>
-            </a>
-            <a href="tel:+971524860664">
-              <Button size="lg" variant="outline" className="border-slate-600 text-white hover:bg-slate-800 rounded-none h-14 px-8 bg-transparent">
-                +971 52 486 0664
-              </Button>
-            </a>
+          <div style={{ display: "flex", gap: 16 }}>
+            <a href="mailto:sales@biazointernational.com" style={{ background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 15, padding: "14px 28px", textDecoration: "none" }}>Email Us</a>
+            <a href="tel:+971524860664" style={{ border: "1px solid #334155", color: "#fff", fontWeight: 600, fontSize: 15, padding: "14px 28px", textDecoration: "none" }}>+971 52 486 0664</a>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Footer */}
-      <footer className="bg-slate-950 py-8 text-slate-400 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="font-serif text-xl font-bold text-white">
-            BIAZO <span className="text-amber-500">INTL.</span>
+      {/* FOOTER */}
+      <footer style={{ background: "#020617", padding: "28px 24px", borderTop: "1px solid #1e293b" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, color: "#fff" }}>
+            BIAZO <span style={{ color: "#f59e0b" }}>INTL.</span>
           </div>
-          <p className="text-sm">© {new Date().getFullYear()} Biazo International General Trading FZ-LLC. All rights reserved.</p>
-          <div className="flex items-center gap-2">
-            <Globe className="w-4 h-4" />
-            <a href="http://www.biazointernational.com" className="hover:text-amber-500 transition-colors text-sm">www.biazointernational.com</a>
-          </div>
+          <p style={{ color: "#475569", fontSize: 13 }}>© {new Date().getFullYear()} Biazo International General Trading FZ-LLC. All rights reserved.</p>
+          <a href="http://www.biazointernational.com" style={{ color: "#475569", fontSize: 13, textDecoration: "none" }}>www.biazointernational.com</a>
         </div>
       </footer>
+
     </div>
   );
 }

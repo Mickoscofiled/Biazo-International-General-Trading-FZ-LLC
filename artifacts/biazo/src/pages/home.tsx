@@ -1,356 +1,244 @@
-import { motion } from "framer-motion";
-import { Link } from "wouter";
-import { ArrowRight, ChevronRight, Globe, Shield, Anchor, Zap, Droplet, Box, Layers, Hammer, Activity, BookOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
 import heroImg from "@/assets/images/hero.png";
 import dubaiImg from "@/assets/images/dubai-office.png";
 import miningImg from "@/assets/images/mining.png";
 import steelImg from "@/assets/images/steel-pipes.png";
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
-};
+const markets = ["Construction", "Mining", "Oil & Gas", "Healthcare & Pharma", "Government", "Agriculture"];
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
-};
-
-const markets = [
-  "Construction", "Mining", "Oil & Gas", "Healthcare & Pharma", "Government", "Agriculture"
+const products = [
+  { icon: "🔩", title: "Automotive & Heavy Equipment", desc: "Heavy mining equipment, construction machines, engines, tyres, spare parts" },
+  { icon: "🛢️", title: "Lubricants & Compounds", desc: "Grease, lubricants, compounds" },
+  { icon: "⚡", title: "Welding Machines & Consumables", desc: "MIG, TIG, Stick, Flux-cored welding machines, electrodes, filler wire, shielding gas, cutting torches, PPE" },
+  { icon: "💻", title: "IT Equipment & Cables", desc: "Laptops & accessories, printers & cartridges, Ethernet cables, UPS systems, electric & mining cables" },
+  { icon: "🔌", title: "Electrical Products", desc: "Contactors, overload relays, switches & automation, plugs & sockets, lighting & accessories" },
+  { icon: "🦺", title: "Safety Solutions", desc: "Mining safety gear, geological equipment, workwear" },
+  { icon: "🔨", title: "Hand & Power Tools", desc: "Hand tools, precision tools, power tools & accessories, garden tools" },
+  { icon: "🪤", title: "Pipes & Fittings", desc: "GI pipes, PPRC pipes, elbows, tees, reducers, couplings, unions, caps, flanges" },
+  { icon: "🏗️", title: "Steel & Metal", desc: "Mild steel plates (HR/CR), stainless steel, galvanized steel, chequered plates, RHS, structural sections, wear plates" },
+  { icon: "🧪", title: "Industrial & Lab Chemicals", desc: "Water treatment chemicals, buffer solutions, lab chemicals, solvents & adhesives, oxidizers & reducing agents" },
 ];
 
-const productCategories = [
-  { icon: Anchor, title: "Automotive & Heavy Equipment", desc: "Heavy mining equipment, construction machines, engines, tyres, spare parts" },
-  { icon: Droplet, title: "Lubricants & Compounds", desc: "Grease, lubricants, compounds" },
-  { icon: Zap, title: "Welding Machines & Consumables", desc: "MIG, TIG, Stick, Flux-cored welding machines, PPRC pipes, electrodes, filler wire, shielding gas, cutting torches, PPE" },
-  { icon: Activity, title: "IT Equipment & Cables", desc: "Laptops & accessories, printers & cartridges, Ethernet cables, UPS systems, resin joint kits, electric & mining cables" },
-  { icon: Zap, title: "Electrical Products", desc: "Contactors, overload relays, switches & automation, plugs & sockets, lighting & accessories" },
-  { icon: Shield, title: "Safety Solutions", desc: "Mining safety gear, geological equipment, workwear" },
-  { icon: Hammer, title: "Hand & Power Tools", desc: "Hand tools, precision tools, power tools & accessories, garden tools" },
-  { icon: Layers, title: "Pipes & Fittings", desc: "GI pipes, PPRC pipes, elbows, tees, reducers, couplings, unions, caps, plugs, nipples, bushings, adapters, flanges" },
-  { icon: Box, title: "Steel & Metal", desc: "Mild steel plates (HR/CR), stainless steel, galvanized steel, chequered plates, RHS, metal bar, structural sections, wear plates, scaffolding" },
-  { icon: Droplet, title: "Industrial & Lab Chemicals", desc: "Water treatment chemicals, scale inhibitors, antidotes, buffer solutions, lab chemicals, solvents & adhesives, oxidizers & reducing agents" },
+const catalogueHighlights = [
+  { cat: "Stationery & Labelling", items: "Flagging tapes, alutags, Rite in the Rain field books, paint markers, inclinometers" },
+  { cat: "Sample Storage", items: "Calico bags, bulk bags, geochem envelopes, forensic bags, zipper bags" },
+  { cat: "Core & More", items: "Core splitters, steel & plastic trays, Estwing picks, sieves, XRF spectrometers" },
+  { cat: "Exploration & Navigation", items: "Garmin GPS units, Brunton compasses & transits, Jacob's staff, Maglite torches" },
+  { cat: "Gold Mining Accessories", items: "Gold shaker tables, furnaces, metal detectors, sluice boxes, panning kits, chain mill crushers" },
 ];
 
 export default function Home() {
   return (
-    <div className="bg-white min-h-[100dvh] flex flex-col text-slate-900 font-sans">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="font-serif text-2xl font-bold tracking-tight text-slate-900">
-            BIAZO <span className="text-amber-500">INTL.</span>
+    <div style={{ fontFamily: "'Inter', sans-serif", color: "#0f172a", background: "#fff" }}>
+
+      {/* NAV */}
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(8px)", borderBottom: "1px solid #e2e8f0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 72, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 700, letterSpacing: "-0.5px" }}>
+            BIAZO <span style={{ color: "#f59e0b" }}>INTL.</span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
-            <a href="#about" className="hover:text-amber-500 transition-colors">About</a>
-            <a href="#markets" className="hover:text-amber-500 transition-colors">Markets</a>
-            <a href="#products" className="hover:text-amber-500 transition-colors">Products</a>
-            <Link href="/catalogue" className="hover:text-amber-500 transition-colors">Catalogue</Link>
-            <a href="#contact" className="hover:text-amber-500 transition-colors">Contact</a>
+          <div style={{ display: "flex", gap: 32, fontSize: 14, fontWeight: 500 }}>
+            <a href="#about" style={{ color: "#0f172a", textDecoration: "none" }}>About</a>
+            <a href="#markets" style={{ color: "#0f172a", textDecoration: "none" }}>Markets</a>
+            <a href="#products" style={{ color: "#0f172a", textDecoration: "none" }}>Products</a>
+            <a href="/catalogue" style={{ color: "#0f172a", textDecoration: "none" }}>Catalogue</a>
+            <a href="#contact" style={{ color: "#0f172a", textDecoration: "none" }}>Contact</a>
           </div>
-          <Button className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-none px-6">
+          <a href="mailto:sales@biazointernational.com" style={{ background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 14, padding: "10px 24px", textDecoration: "none", display: "inline-block" }}>
             Get a Quote
-          </Button>
+          </a>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative pt-20 h-[90vh] overflow-hidden flex items-center">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-slate-900/60 z-10" />
-          <img src={heroImg} alt="Industrial port" className="w-full h-full object-cover" />
+      {/* HERO */}
+      <section style={{ position: "relative", height: "92vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0 }}>
+          <div style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.65)", zIndex: 1 }} />
+          <img src={heroImg} alt="Industrial port" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            className="max-w-3xl"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium mb-6 uppercase tracking-widest">
-              <Globe className="w-4 h-4" /> Global Trading Powerhouse
-            </div>
-            <h1 className="text-5xl md:text-7xl font-serif font-bold text-white leading-[1.1] mb-6">
-              Precision Meets <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600">Power.</span>
-            </h1>
-            <p className="text-xl text-slate-200 mb-10 max-w-2xl font-light">
-              Certified UAE-based procurement and supply chain leaders delivering industrial, construction, and healthcare equipment across East Africa.
+        <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", padding: "0 24px", width: "100%", paddingTop: 72 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", border: "1px solid rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.08)", color: "#fbbf24", fontSize: 12, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", marginBottom: 28 }}>
+            🌍 Global Trading Powerhouse
+          </div>
+          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(42px, 7vw, 80px)", fontWeight: 700, color: "#fff", lineHeight: 1.1, marginBottom: 24, maxWidth: 800 }}>
+            Precision Meets <span style={{ color: "#f59e0b" }}>Power.</span>
+          </h1>
+          <p style={{ fontSize: 20, color: "#cbd5e1", marginBottom: 40, maxWidth: 580, lineHeight: 1.6, fontWeight: 300 }}>
+            Certified UAE-based procurement and supply chain leaders delivering industrial, construction, and healthcare equipment across East Africa.
+          </p>
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+            <a href="#products" style={{ background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 16, padding: "16px 36px", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>
+              Explore Our Solutions →
+            </a>
+            <a href="/catalogue" style={{ background: "transparent", color: "#fff", fontWeight: 600, fontSize: 16, padding: "16px 36px", textDecoration: "none", border: "1px solid rgba(255,255,255,0.3)" }}>
+              View Catalogue
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT */}
+      <section id="about" style={{ padding: "100px 24px", background: "#f8fafc" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+          <div>
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, marginBottom: 24, lineHeight: 1.2 }}>
+              Bridging worlds with rugged field operations & professional procurement.
+            </h2>
+            <p style={{ color: "#475569", fontSize: 17, marginBottom: 20, lineHeight: 1.7 }}>
+              Established in September 2022 as a sister company to Biazo International Company Limited in Uganda (founded 2008), we provide professional representation services for companies in the UAE and neighboring countries.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-none text-lg px-8 h-14">
-                Explore Our Solutions <ArrowRight className="ml-2" />
-              </Button>
+            <p style={{ color: "#475569", fontSize: 17, marginBottom: 40, lineHeight: 1.7 }}>
+              With over a decade of consistent value delivery through procurement and supply chain management across East Africa, we operate dual hubs in the UAE and Uganda.
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+              <div style={{ borderLeft: "3px solid #f59e0b", paddingLeft: 16 }}>
+                <div style={{ fontFamily: "Georgia, serif", fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Our Mission</div>
+                <p style={{ color: "#64748b", fontSize: 14, lineHeight: 1.6 }}>To serve, support, and collaborate with our clients to deliver timely services with commitment, integrity, and professionalism.</p>
+              </div>
+              <div style={{ borderLeft: "3px solid #0f172a", paddingLeft: 16 }}>
+                <div style={{ fontFamily: "Georgia, serif", fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Our Vision</div>
+                <p style={{ color: "#64748b", fontSize: 14, lineHeight: 1.6 }}>To be a leading, trusted partner that delivers outstanding, timely services and creates significant value.</p>
+              </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Mission & Vision & Story */}
-      <section id="about" className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={staggerContainer}
-            >
-              <motion.h2 variants={fadeIn} className="text-3xl md:text-5xl font-serif font-bold mb-8">
-                Bridging worlds with rugged field operations & professional procurement.
-              </motion.h2>
-              <motion.p variants={fadeIn} className="text-slate-600 mb-6 text-lg">
-                Established in September 2022 as a sister company to Biazo International Company Limited in Uganda (founded 2008), we provide professional representation services for companies in the UAE and neighboring countries.
-              </motion.p>
-              <motion.p variants={fadeIn} className="text-slate-600 text-lg mb-8">
-                With over a decade of consistent value delivery through procurement and supply chain management across East Africa, we operate dual hubs in the UAE and Uganda.
-              </motion.p>
-
-              <div className="grid sm:grid-cols-2 gap-8">
-                <motion.div variants={fadeIn} className="border-l-2 border-amber-500 pl-4">
-                  <h3 className="font-serif font-bold text-xl mb-2">Our Mission</h3>
-                  <p className="text-slate-600 text-sm">To serve, support, and collaborate with our clients to deliver timely services with commitment, integrity, and professionalism.</p>
-                </motion.div>
-                <motion.div variants={fadeIn} className="border-l-2 border-slate-900 pl-4">
-                  <h3 className="font-serif font-bold text-xl mb-2">Our Vision</h3>
-                  <p className="text-slate-600 text-sm">To be a leading, trusted partner that delivers outstanding, timely services and creates significant value.</p>
-                </motion.div>
-              </div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative h-[600px]"
-            >
-              <img src={dubaiImg} alt="Dubai Operations" className="absolute inset-0 w-full h-full object-cover object-center shadow-2xl" />
-              <div className="absolute -bottom-6 -left-6 bg-slate-900 text-white p-8 max-w-sm">
-                <div className="text-amber-500 font-serif text-5xl font-bold mb-2">2008</div>
-                <div className="font-medium text-lg uppercase tracking-wide">Roots in Uganda</div>
-                <div className="text-slate-400 mt-2">Expanding global footprint from the UAE to East Africa.</div>
-              </div>
-            </motion.div>
+          </div>
+          <div style={{ position: "relative", height: 560 }}>
+            <img src={dubaiImg} alt="Dubai Operations" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+            <div style={{ position: "absolute", bottom: -24, left: -24, background: "#0f172a", color: "#fff", padding: 32 }}>
+              <div style={{ color: "#f59e0b", fontFamily: "Georgia, serif", fontSize: 48, fontWeight: 700, lineHeight: 1 }}>2008</div>
+              <div style={{ fontWeight: 600, fontSize: 16, textTransform: "uppercase", letterSpacing: 1, marginTop: 8 }}>Roots in Uganda</div>
+              <div style={{ color: "#94a3b8", fontSize: 14, marginTop: 8 }}>Expanding global footprint from the UAE to East Africa.</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Markets Served */}
-      <section id="markets" className="py-24 bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Key Markets Served</h2>
-            <p className="text-slate-400 text-lg">We supply a wide range of essential products to diverse sectors, driving progress and efficiency across continents.</p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-slate-800 border border-slate-800">
-            {markets.map((market, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-slate-900 p-8 md:p-12 flex items-center justify-center text-center group hover:bg-slate-800 transition-colors"
-              >
-                <span className="font-serif text-xl md:text-2xl font-medium group-hover:text-amber-500 transition-colors">{market}</span>
-              </motion.div>
+      {/* MARKETS */}
+      <section id="markets" style={{ padding: "100px 24px", background: "#0f172a", color: "#fff" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", maxWidth: 600, margin: "0 auto 64px" }}>
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, marginBottom: 16 }}>Key Markets Served</h2>
+            <p style={{ color: "#94a3b8", fontSize: 17, lineHeight: 1.6 }}>We supply a wide range of essential products to diverse sectors, driving progress and efficiency across continents.</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "1px solid #1e293b" }}>
+            {markets.map((m, i) => (
+              <div key={i} style={{ padding: "48px 32px", textAlign: "center", borderRight: i % 3 !== 2 ? "1px solid #1e293b" : "none", borderBottom: i < 3 ? "1px solid #1e293b" : "none", fontSize: 22, fontFamily: "Georgia, serif", fontWeight: 500 }}>
+                {m}
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Product Categories */}
-      <section id="products" className="py-24 bg-white relative">
-        <div className="absolute top-0 right-0 w-1/3 h-full opacity-5 pointer-events-none">
-          <img src={steelImg} alt="Texture" className="w-full h-full object-cover" />
+      {/* PRODUCTS */}
+      <section id="products" style={{ padding: "100px 24px", background: "#fff", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: 0, right: 0, width: "33%", height: "100%", opacity: 0.04, pointerEvents: "none" }}>
+          <img src={steelImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            className="mb-16 md:w-2/3"
-          >
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-6">Comprehensive Solutions.</h2>
-            <p className="text-slate-600 text-lg">From heavy mining equipment to precision laboratory chemicals, our vast procurement network ensures you get exactly what you need, when you need it.</p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {productCategories.map((category, idx) => (
-              <motion.div 
-                key={idx}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeIn}
-                className="group border border-slate-200 p-8 hover:border-amber-500 hover:shadow-xl transition-all duration-300 bg-white"
-              >
-                <div className="w-12 h-12 bg-slate-100 text-slate-900 group-hover:bg-amber-500 group-hover:text-white flex items-center justify-center mb-6 transition-colors">
-                  <category.icon className="w-6 h-6" />
-                </div>
-                <h3 className="font-serif font-bold text-xl mb-3 text-slate-900">{category.title}</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{category.desc}</p>
-              </motion.div>
+        <div style={{ maxWidth: 1200, margin: "0 auto", position: "relative" }}>
+          <div style={{ marginBottom: 64, maxWidth: 600 }}>
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, marginBottom: 16 }}>Comprehensive Solutions.</h2>
+            <p style={{ color: "#475569", fontSize: 17, lineHeight: 1.6 }}>From heavy mining equipment to precision laboratory chemicals, our vast procurement network ensures you get exactly what you need, when you need it.</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+            {products.map((p, i) => (
+              <div key={i} style={{ border: "1px solid #e2e8f0", padding: 32, background: "#fff" }}>
+                <div style={{ fontSize: 28, marginBottom: 16 }}>{p.icon}</div>
+                <div style={{ fontFamily: "Georgia, serif", fontWeight: 700, fontSize: 17, marginBottom: 10 }}>{p.title}</div>
+                <p style={{ color: "#64748b", fontSize: 14, lineHeight: 1.6 }}>{p.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Geological Catalogue CTA */}
-      <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5 pointer-events-none">
-          <img src={miningImg} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeIn}
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium mb-6 uppercase tracking-widest">
-                <BookOpen className="w-4 h-4" /> Geological Catalogue 2026/27
+      {/* CATALOGUE CTA */}
+      <section style={{ padding: "100px 24px", background: "#0f172a", color: "#fff" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", border: "1px solid rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.08)", color: "#fbbf24", fontSize: 12, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", marginBottom: 28 }}>
+                📖 Geological Catalogue 2026/27
               </div>
-              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 leading-tight">
+              <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, marginBottom: 20, lineHeight: 1.2 }}>
                 Explore Our Full Range of Geological Equipment
               </h2>
-              <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                Browse over 80 specialist products across five categories — from Brunton compasses and Garmin GPS units to gold shaker tables, core splitters, and Rite in the Rain field books.
+              <p style={{ color: "#94a3b8", fontSize: 17, marginBottom: 40, lineHeight: 1.7 }}>
+                Browse over 100 specialist products across five categories — from Brunton compasses and Garmin GPS units to gold shaker tables, core splitters, and Rite in the Rain field books.
               </p>
-              <div className="grid grid-cols-2 gap-4 mb-10">
-                {[
-                  { label: "Stationery & Labelling", count: "32 products" },
-                  { label: "Sample Storage", count: "6 products" },
-                  { label: "Core & More", count: "26 products" },
-                  { label: "Exploration & Navigation", count: "14 products" },
-                  { label: "Gold Mining Accessories", count: "18 products" },
-                ].map((cat, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <ChevronRight className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                    <div>
-                      <div className="text-white font-medium text-sm">{cat.label}</div>
-                      <div className="text-slate-400 text-xs">{cat.count}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Link href="/catalogue">
-                <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-none h-14 px-8 text-base">
-                  Browse the Catalogue <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="grid grid-cols-2 gap-4"
-            >
-              {[
-                { title: "Core Splitting Machines", sub: "220 V & 380 V models" },
-                { title: "Brunton Compasses", sub: "TruArc, ComPro, Geo, Axis" },
-                { title: "Garmin GPS Units", sub: "eTrex SE, 22x, 32x, Map 65s" },
-                { title: "Gold Shaker Tables", sub: "145–750 kg/h capacity" },
-                { title: "Steel & Plastic Core Trays", sub: "Multiple standard sizes" },
-                { title: "Estwing Rock Picks", sub: "Leather & vinyl handle" },
-              ].map((item, i) => (
-                <Link key={i} href="/catalogue" className="block bg-slate-800 border border-slate-700 hover:border-amber-500/50 p-5 transition-all duration-300 group">
-                  <div className="text-amber-500 text-xs font-bold uppercase tracking-wider mb-2 group-hover:text-amber-400">Featured</div>
-                  <div className="font-serif font-bold text-white text-sm mb-1">{item.title}</div>
-                  <div className="text-slate-400 text-xs">{item.sub}</div>
-                </Link>
+              <a href="/catalogue" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 16, padding: "16px 36px", textDecoration: "none" }}>
+                Browse the Full Catalogue →
+              </a>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {catalogueHighlights.map((c, i) => (
+                <div key={i} style={{ background: "#1e293b", border: "1px solid #334155", padding: "20px 24px" }}>
+                  <div style={{ color: "#f59e0b", fontWeight: 700, fontSize: 13, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>{c.cat}</div>
+                  <div style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.5 }}>{c.items}</div>
+                </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Image Break */}
-      <section className="h-[60vh] relative">
-        <div className="absolute inset-0 bg-slate-900/40 z-10" />
-        <img src={miningImg} alt="Heavy Equipment" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 z-20 flex items-center justify-center">
-          <div className="text-center text-white px-6">
-            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-4">Uncompromising Quality.</h2>
-            <p className="text-xl font-light text-slate-200 max-w-2xl mx-auto">Global leader in providing innovative and comprehensive solutions.</p>
+      {/* IMAGE BREAK */}
+      <section style={{ height: "55vh", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.45)", zIndex: 1 }} />
+        <img src={miningImg} alt="Mining operations" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ textAlign: "center", color: "#fff", padding: "0 24px" }}>
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(32px, 5vw, 64px)", fontWeight: 700, marginBottom: 16 }}>Uncompromising Quality.</h2>
+            <p style={{ fontSize: 20, color: "#cbd5e1", fontWeight: 300, maxWidth: 560, margin: "0 auto" }}>Global leader in providing innovative and comprehensive solutions.</p>
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-24 bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-16">
+      {/* CONTACT */}
+      <section id="contact" style={{ padding: "100px 24px", background: "#0f172a", color: "#fff" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80 }}>
+          <div>
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, marginBottom: 16, lineHeight: 1.2 }}>Let's Build the Future Together.</h2>
+            <p style={{ color: "#94a3b8", fontSize: 17, marginBottom: 48, lineHeight: 1.6 }}>Reach out to our team in the UAE to discuss your procurement and supply chain needs.</p>
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ color: "#f59e0b", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, marginBottom: 8 }}>Ras Al Khaimah, UAE</div>
+              <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>RAKEZ Business Zone-FZ B4209b10<br />Business Center 04</p>
+            </div>
             <div>
-              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Let's Build the Future Together.</h2>
-              <p className="text-slate-400 text-lg mb-10">Reach out to our team in the UAE to discuss your procurement and supply chain needs.</p>
-              
-              <div className="space-y-6">
-                <div>
-                  <div className="text-amber-500 text-sm font-bold uppercase tracking-wider mb-2">Ras Al Khaimah, UAE</div>
-                  <p className="text-slate-300">RAKEZ Business Zone-FZ B4209b10<br />Business Center 04</p>
-                </div>
-                <div>
-                  <div className="text-amber-500 text-sm font-bold uppercase tracking-wider mb-2">Dubai, UAE</div>
-                  <p className="text-slate-300">Abraj Shopping Center, 903<br />Sabka Rd, Deira</p>
-                </div>
-              </div>
+              <div style={{ color: "#f59e0b", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, marginBottom: 8 }}>Dubai, UAE</div>
+              <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>Abraj Shopping Center, 903<br />Sabka Rd, Deira</p>
             </div>
-            
-            <div className="bg-slate-800 p-8 md:p-12 border border-slate-700">
-              <h3 className="font-serif text-2xl font-bold mb-6">Contact Us</h3>
-              <div className="space-y-6">
-                <div className="flex flex-col border-b border-slate-700 pb-4">
-                  <span className="text-slate-400 text-sm mb-1">Email</span>
-                  <a href="mailto:sales@biazointernational.com" className="text-xl hover:text-amber-500 transition-colors">sales@biazointernational.com</a>
-                </div>
-                <div className="flex flex-col border-b border-slate-700 pb-4">
-                  <span className="text-slate-400 text-sm mb-1">Phone (Primary)</span>
-                  <a href="tel:+971524860664" className="text-xl hover:text-amber-500 transition-colors">+971 52 486 0664</a>
-                </div>
-                <div className="flex flex-col pb-4">
-                  <span className="text-slate-400 text-sm mb-1">Phone (Secondary)</span>
-                  <a href="tel:+971568878801" className="text-xl hover:text-amber-500 transition-colors">+971 56 887 8801</a>
-                </div>
-                <Button className="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-none h-14 text-lg mt-4">
-                  Send Inquiry
-                </Button>
-              </div>
+          </div>
+          <div style={{ background: "#1e293b", padding: 48, border: "1px solid #334155" }}>
+            <h3 style={{ fontFamily: "Georgia, serif", fontSize: 24, fontWeight: 700, marginBottom: 32 }}>Contact Us</h3>
+            <div style={{ borderBottom: "1px solid #334155", paddingBottom: 20, marginBottom: 20 }}>
+              <div style={{ color: "#64748b", fontSize: 13, marginBottom: 6 }}>Email</div>
+              <a href="mailto:sales@biazointernational.com" style={{ color: "#fff", fontSize: 18, textDecoration: "none" }}>sales@biazointernational.com</a>
             </div>
+            <div style={{ borderBottom: "1px solid #334155", paddingBottom: 20, marginBottom: 20 }}>
+              <div style={{ color: "#64748b", fontSize: 13, marginBottom: 6 }}>Phone (Primary)</div>
+              <a href="tel:+971524860664" style={{ color: "#fff", fontSize: 18, textDecoration: "none" }}>+971 52 486 0664</a>
+            </div>
+            <div style={{ paddingBottom: 20, marginBottom: 32 }}>
+              <div style={{ color: "#64748b", fontSize: 13, marginBottom: 6 }}>Phone (Secondary)</div>
+              <a href="tel:+971568878801" style={{ color: "#fff", fontSize: 18, textDecoration: "none" }}>+971 56 887 8801</a>
+            </div>
+            <a href="mailto:sales@biazointernational.com" style={{ display: "block", background: "#f59e0b", color: "#0f172a", fontWeight: 700, fontSize: 17, padding: "18px 0", textDecoration: "none", textAlign: "center" }}>
+              Send Inquiry
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-slate-950 py-10 text-slate-400 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="font-serif text-xl font-bold text-white">
-            BIAZO <span className="text-amber-500">INTL.</span>
+      {/* FOOTER */}
+      <footer style={{ background: "#020617", padding: "32px 24px", borderTop: "1px solid #1e293b" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, color: "#fff" }}>
+            BIAZO <span style={{ color: "#f59e0b" }}>INTL.</span>
           </div>
-          <p className="text-sm">© {new Date().getFullYear()} Biazo International General Trading FZ-LLC. All rights reserved.</p>
-          <div className="flex gap-4">
-            <a href="http://www.biazointernational.com" className="hover:text-amber-500 transition-colors">www.biazointernational.com</a>
-          </div>
+          <p style={{ color: "#475569", fontSize: 13 }}>© {new Date().getFullYear()} Biazo International General Trading FZ-LLC. All rights reserved.</p>
+          <a href="http://www.biazointernational.com" style={{ color: "#475569", fontSize: 13, textDecoration: "none" }}>www.biazointernational.com</a>
         </div>
       </footer>
+
     </div>
   );
 }
