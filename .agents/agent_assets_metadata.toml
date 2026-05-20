@@ -1,0 +1,26 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "D25NhOBxUt5OQUYphnxf2"
+uri = "file://artifacts/biazo/src/assets/images/hero.png"
+type = "image"
+title = "Industrial port container ship sunset"
+
+[[generated]]
+id = "eulQiGI4jOWtyN1uPglBV"
+uri = "file://artifacts/biazo/src/assets/images/dubai-office.png"
+type = "image"
+title = "Modern Dubai glass skyscraper exterior"
+
+[[generated]]
+id = "qbbTBnPEIzprQINzL3g2Z"
+uri = "file://artifacts/biazo/src/assets/images/mining.png"
+type = "image"
+title = "Heavy mining equipment rugged terrain"
+
+[[generated]]
+id = "twBbstcqiCg-em9wKDMSQ"
+uri = "file://artifacts/biazo/src/assets/images/steel-pipes.png"
+type = "image"
+title = "Stacked steel pipes industrial pattern"

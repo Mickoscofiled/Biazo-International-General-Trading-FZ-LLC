@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Biazo International"
+version = "1.0.0"
+id = "artifacts/biazo"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25125
+
+[services.development]
+run = "pnpm --filter @workspace/biazo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/biazo", "run", "build" ]
+publicDir = "artifacts/biazo/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25125"
+BASE_PATH = "/"
