@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import heroImg from "@/assets/images/hero.png";
-import dubaiImg from "@/assets/images/dubai-office.png";
-import miningImg from "@/assets/images/mining.png";
-import steelImg from "@/assets/images/steel-pipes.png";
+import { useState, useEffect, useRef } from "react";
+import heroImg from "@/assets/images/hero.webp";
+import dubaiImg from "@/assets/images/dubai-office.webp";
+import miningImg from "@/assets/images/mining.webp";
+import steelImg from "@/assets/images/steel-pipes.webp";
 
 const PF = "'Playfair Display', Georgia, serif";
 const IN = "'Inter', -apple-system, sans-serif";
@@ -57,9 +57,19 @@ export default function Home() {
   const [sent, setSent] = useState(false);
   const [showTop, setShowTop] = useState(false);
 
+  // Throttled scroll listener — only updates state every 100ms to avoid layout thrashing
   useEffect(() => {
-    const fn = () => setShowTop(window.scrollY > 500);
-    window.addEventListener("scroll", fn);
+    let ticking = false;
+    const fn = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setShowTop(window.scrollY > 500);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
@@ -121,7 +131,7 @@ export default function Home() {
       <section style={{ position: "relative", height: "90vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0 }}>
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(110deg, rgba(10,15,30,0.88) 40%, rgba(10,15,30,0.5) 100%)", zIndex: 1 }} />
-          <img src={heroImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }} />
+          <img src={heroImg} alt="" fetchPriority="high" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }} />
         </div>
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", padding: "0 24px", width: "100%" }}>
           <div style={{ maxWidth: 720 }}>
@@ -199,7 +209,7 @@ export default function Home() {
           </div>
           <div style={{ position: "relative" }}>
             <div style={{ position: "relative", overflow: "hidden" }}>
-              <img src={dubaiImg} alt="Dubai Operations" style={{ width: "100%", height: 580, objectFit: "cover", objectPosition: "center", display: "block" }} />
+              <img src={dubaiImg} alt="Dubai Operations" loading="lazy" decoding="async" style={{ width: "100%", height: 580, objectFit: "cover", objectPosition: "center", display: "block" }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(10,15,30,0.7) 0%, transparent 50%)" }} />
             </div>
             <div style={{ position: "absolute", bottom: 0, left: -32, right: 32, background: NAVY2, padding: "28px 32px", display: "flex", alignItems: "center", gap: 24 }}>
@@ -279,7 +289,7 @@ export default function Home() {
       {/* CATALOGUE CTA */}
       <section style={{ padding: "112px 24px", background: NAVY, overflow: "hidden", position: "relative" }}>
         <div style={{ position: "absolute", top: 0, right: 0, width: "40%", height: "100%", opacity: 0.04, pointerEvents: "none" }}>
-          <img src={steelImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img src={steelImg} alt="" loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
         <div style={{ maxWidth: 1200, margin: "0 auto", position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 96, alignItems: "start" }}>
           <div>
@@ -311,7 +321,7 @@ export default function Home() {
       {/* IMAGE BREAK */}
       <section style={{ height: "52vh", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "rgba(10,15,30,0.55)", zIndex: 1 }} />
-        <img src={miningImg} alt="Mining operations" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%" }} />
+        <img src={miningImg} alt="Mining operations" loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%" }} />
         <div style={{ position: "absolute", inset: 0, zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div style={{ width: 48, height: 2, background: AMBER, marginBottom: 32 }} />
           <h2 style={{ fontFamily: PF, fontSize: "clamp(32px, 5vw, 68px)", fontWeight: 700, color: "#fff", letterSpacing: "-1px", marginBottom: 16, lineHeight: 1.1 }}>

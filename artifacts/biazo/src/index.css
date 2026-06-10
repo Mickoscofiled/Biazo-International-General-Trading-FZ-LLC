@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+/* Fonts are loaded via <link> in index.html (Playfair Display + Inter with preconnect) */
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -212,6 +212,7 @@
 
 .bz-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  will-change: transform;
 }
 .bz-card:hover {
   transform: translateY(-3px);
@@ -219,6 +220,7 @@
 }
 .bz-card-dark {
   transition: transform 0.2s ease, background 0.2s ease;
+  will-change: transform;
 }
 .bz-card-dark:hover {
   transform: translateY(-2px);
@@ -264,6 +266,7 @@
 }
 .bz-product-card {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  will-change: transform;
 }
 .bz-product-card:hover {
   border-color: #f59e0b !important;
@@ -285,8 +288,26 @@
 }
 .bz-wa-btn {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
 }
 .bz-wa-btn:hover {
   transform: scale(1.08);
   box-shadow: 0 6px 28px rgba(37,211,102,0.6) !important;
+}
+
+/* GPU-promote sticky nav to avoid repaint on scroll */
+nav[style*="sticky"] {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Contain layout/style for static non-interactive sections */
+#about, #markets, #products, #contact, footer {
+  contain: layout style;
+}
+
+/* Prevent layout shift from images before they load */
+img {
+  max-width: 100%;
+  height: auto;
 }

@@ -145,9 +145,19 @@ export default function Catalogue() {
   const [showTop, setShowTop] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // Throttled scroll listener — prevents layout thrashing on every scroll event
   useEffect(() => {
-    const fn = () => setShowTop(window.scrollY > 400);
-    window.addEventListener("scroll", fn);
+    let ticking = false;
+    const fn = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setShowTop(window.scrollY > 400);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
