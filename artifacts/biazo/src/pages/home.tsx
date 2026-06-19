@@ -117,7 +117,7 @@ export default function Home() {
             BIAZO <span style={{ color: AMBER }}>INTL.</span>
           </div>
           <div style={{ display: "flex", gap: 32, fontSize: 13, fontWeight: 500, letterSpacing: 0.3 }}>
-            {[["#about","About"],["#markets","Markets"],["#products","Products"],["/catalogue","Catalogue"],["#contact","Contact"]].map(([href, label]) => (
+            {[["#home","Home"],["#about","About"],["#markets","Sectors"],["#contact","Contact"]].map(([href, label]) => (
               <a key={label} href={href} className="bz-nav-link" style={{ color: NAVY2, textDecoration: "none", padding: "4px 0" }}>{label}</a>
             ))}
           </div>
